@@ -23,3 +23,5 @@ var list = Enumerable.Range(1, 100000)
 await connection.FastInsertAsync(list, tableName);
 
 ```
+
+The code above will insert 100000 rows into a table with a matter of seconds.
