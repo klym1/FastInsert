@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Dapper;
 using MySql.Data.MySqlClient;
 
@@ -29,19 +30,20 @@ namespace DapperFastInsert
 
             var connection = new MySqlConnection(conn);
 
-            var list = Enumerable.Range(1, 100000)
+            var list = Enumerable.Range(1, 10)
                 .Select(it =>
                     new Table
                     {
                         Int = it,
-                        Text = "text"+ it
+                        Text = "text" + it
                     });
 
             var fileName = "temp.csv";
 
-            var tableColumns = GetTableColumns(connection, "test").ToList();
+            var tableColumns = GetTableColumns(connection, "test");
 
-            await WriteToCsvFileAsync(list, tableColumns, fileName);
+            var columnIndexes = GetColumnIndexes(tableColumns);
+            await WriteToCsvFileAsync(list, columnIndexes, fileName);
 
             var query = BuildQuery("test", fileName);
 
@@ -49,6 +51,13 @@ namespace DapperFastInsert
             await connection.ExecuteAsync(query);
             sw.Stop();
             Console.WriteLine($"Inserted in {sw.ElapsedMilliseconds} ms");
+        }
+
+        private static IDictionary<string, int> GetColumnIndexes(IEnumerable<string> columns)
+        {
+            return columns
+                .Select((it, index) => (it, index))
+                .ToDictionary(it => it.it, it => it.index, StringComparer.OrdinalIgnoreCase);
         }
 
         private static string BuildQuery(string tableName, string tempFilePath)
@@ -63,21 +72,27 @@ namespace DapperFastInsert
 
         }
 
-        private static Task WriteToCsvFileAsync(IEnumerable<Table> list, List<string> tableColumns, string fileName)
+        private static Task WriteToCsvFileAsync(IEnumerable<Table> list, IDictionary<string, int> dict, string fileName)
         {
-            var fileStream = new FileStream(fileName, FileMode.Create);
+            using var fileStream = new FileStream(fileName, FileMode.Create);
             using TextWriter textWriter = new StreamWriter(fileStream);
             using var writer = new CsvWriter(textWriter);
 
             writer.Configuration.HasHeaderRecord = true;
             writer.Configuration.DynamicPropertySort = new ColumnComparer();
-          //  writer.Configuration.
-           // writer.Configuration. = new ColumnComparer();
 
+            var map = writer.Configuration.AutoMap<Table>();
+
+            foreach (var memberMap in map.MemberMaps)
+            {
+                var index = dict[memberMap.Data.Names[0]];
+                memberMap.Index(index);
+            }
+            
             writer.WriteRecords(list);
             return Task.FromResult(0);
         }
-        
+
         private static IEnumerable<string> GetTableColumns(IDbConnection connection, string tableName)
         {
             return connection.Query<string>($@"SELECT c.column_name
