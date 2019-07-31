@@ -25,3 +25,5 @@ await connection.FastInsertAsync(list, tableName);
 ```
 
 The code above will insert 100000 rows into a table with a matter of seconds.
+
+Under the hood the library utilizes **CsvHelper** (https://github.com/JoshClose/CsvHelper) to generate a csv file and **Dapper** (https://github.com/StackExchange/Dapper) to work with Ado.Net at a slightly higher level.
