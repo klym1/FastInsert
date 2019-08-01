@@ -4,18 +4,21 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
-using CsvHelper.TypeConversion;
 
-namespace DapperFastInsert
+namespace FastInsert
 {
-    public static class DapperFastInserter
+    public static class FastInserter
     {
         public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, string tableName)
         {
+            var wasClosed = connection.State == ConnectionState.Closed;
+
+            if (wasClosed)
+                connection.Open();
+
             var fileName = "temp.csv";
             
             var tableColumns = GetTableColumns(connection, tableName, connection.Database);
@@ -25,6 +28,9 @@ namespace DapperFastInsert
             var query = BuildQuery(tableName, fileName);
 
             var res = ExecuteStatementAsync(connection, query);
+
+            if(wasClosed)
+                connection.Close();
 
             return res;
         }
@@ -88,9 +94,6 @@ namespace DapperFastInsert
 
         private static IEnumerable<string> GetTableColumns(IDbConnection connection, string tableName, string dbName)
         {
-            if (connection.State != ConnectionState.Open)
-                connection.Open();
-
             var command = connection.CreateCommand();
             command.CommandText = $@"SELECT c.column_name
             FROM INFORMATION_SCHEMA.COLUMNS c
@@ -104,16 +107,6 @@ namespace DapperFastInsert
                 var str = reader.GetString(0);
                 yield return str;
             }
-        }
-    }
-
-    public class GuidFormatter : DefaultTypeConverter
-    {
-        public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
-        {
-            var bytes = ((Guid)value).ToByteArray();
-            var str = Encoding.UTF8.GetString(bytes);
-            return str;
         }
     }
 }
