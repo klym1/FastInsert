@@ -22,12 +22,12 @@ namespace FastInsert
                 connection.Open();
 
             var fileName = "temp.csv";
-            
-            var tableColumns = GetTableColumns(connection, tableName, connection.Database);
-            var columnIndexes = GetColumnIndexes(tableColumns);
-            await WriteToCsvFileAsync(list, columnIndexes, fileName);
 
-            var query = BuildQuery(tableName, fileName);
+            var tableColumns = GetTableColumns(connection, tableName, connection.Database);
+
+            var classFields = await WriteToCsvFileAsync(list, fileName);
+
+            var query = BuildQuery(tableName, classFields, fileName);
 
             var res = ExecuteStatementAsync(connection, query);
 
@@ -43,29 +43,30 @@ namespace FastInsert
             command.CommandText = query;
             return command.ExecuteNonQuery();
         }
-
-        private static IDictionary<string, int> GetColumnIndexes(IEnumerable<string> columns)
-        {
-            return columns
-                .Select((it, index) => (it, index))
-                .ToDictionary(it => it.it, it => it.index, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private static string BuildQuery(string tableName, string tempFilePath)
+         
+        private static string BuildQuery(string tableName, List<string> fields, string tempFilePath)
         {
             var lineEnding = Environment.NewLine;
 
+            var fieldsC = string.Join(", ", fields.Select(f =>
+            {
+                if (string.Equals(f, "guid", StringComparison.OrdinalIgnoreCase))
+                    return "@var1";
+
+                return "`" + f + "`";
+            }));
+            
             return $@"LOAD DATA LOCAL INFILE '{tempFilePath}' 
                    INTO TABLE {tableName} 
                     COLUMNS TERMINATED BY ';' 
                     LINES TERMINATED BY '{lineEnding}'
                     IGNORE 1 LINES                    
-                    (`int`, `text`, `dateCol`, @var1) 
+                    ({fieldsC}) 
                     SET guid = UNHEX(@var1)
                     ";
         }
 
-        private static Task WriteToCsvFileAsync<T>(IEnumerable<T> list, IDictionary<string, int> dict, string fileName)
+        private static Task<List<string>> WriteToCsvFileAsync<T>(IEnumerable<T> list, string fileName)
         {
             using var fileStream = new FileStream(fileName, FileMode.Create);
             using TextWriter textWriter = new StreamWriter(fileStream);
@@ -79,21 +80,11 @@ namespace FastInsert
             writer.Configuration.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());
 
             var map = writer.Configuration.AutoMap<T>();
-            SortColumns(dict, map);
-
+            
             writer.WriteRecords(list);
-            return Task.FromResult(0);
+            return Task.FromResult(map.MemberMaps.Select(m => m.Data.Names[0]).ToList());
         }
-
-        private static void SortColumns(IDictionary<string, int> dict, ClassMap map)
-        {
-            foreach (var memberMap in map.MemberMaps)
-            {
-                var index = dict[memberMap.Data.Names[0]];
-                memberMap.Index(index);
-            }
-        }
-
+        
         private static IEnumerable<string> GetTableColumns(IDbConnection connection, string tableName, string dbName)
         {
             using var command = connection.CreateCommand();
