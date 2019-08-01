@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
-using Dapper;
 
 namespace DapperFastInsert
 {
@@ -24,7 +23,17 @@ namespace DapperFastInsert
             await WriteToCsvFileAsync(list, columnIndexes, fileName);
 
             var query = BuildQuery(tableName, fileName);
-            return await connection.ExecuteAsync(query);
+
+            var res = ExecuteStatementAsync(connection, query);
+
+            return res;
+        }
+
+        private static int ExecuteStatementAsync(IDbConnection connection, string query)
+        {
+            using var command = connection.CreateCommand();
+            command.CommandText = query;
+            return command.ExecuteNonQuery();
         }
 
         private static IDictionary<string, int> GetColumnIndexes(IEnumerable<string> columns)
@@ -79,10 +88,22 @@ namespace DapperFastInsert
 
         private static IEnumerable<string> GetTableColumns(IDbConnection connection, string tableName, string dbName)
         {
-            return connection.Query<string>($@"SELECT c.column_name
+            if (connection.State != ConnectionState.Open)
+                connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = $@"SELECT c.column_name
             FROM INFORMATION_SCHEMA.COLUMNS c
             WHERE c.table_name = '{tableName}'
-                -- AND c.table_schema = '{dbName}'");
+                -- AND c.table_schema = '{dbName}'";
+
+            using var reader = command.ExecuteReader();
+
+            while (!reader.IsClosed && reader.Read())
+            {
+                var str = reader.GetString(0);
+                yield return str;
+            }
         }
     }
 
