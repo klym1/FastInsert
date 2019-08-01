@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
+using MySql.Data.MySqlClient;
 
 namespace FastInsert
 {
@@ -54,10 +56,13 @@ namespace FastInsert
             var lineEnding = Environment.NewLine;
 
             return $@"LOAD DATA LOCAL INFILE '{tempFilePath}' 
-                   INTO TABLE `{tableName}` 
-                   FIELDS TERMINATED BY ';' 
-                   LINES TERMINATED BY '{lineEnding}' 
-                   IGNORE 1 LINES";
+                   INTO TABLE {tableName} 
+                    COLUMNS TERMINATED BY ';' 
+                    LINES TERMINATED BY '{lineEnding}'
+                    IGNORE 1 LINES                    
+                    (`int`, `text`, `dateCol`, @var1) 
+                    SET guid = UNHEX(@var1)
+                    ";
         }
 
         private static Task WriteToCsvFileAsync<T>(IEnumerable<T> list, IDictionary<string, int> dict, string fileName)
@@ -71,10 +76,7 @@ namespace FastInsert
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
             opt1.Formats = new[] { "O" };
 
-            //var opt2 = writer.Configuration.TypeConverterOptionsCache.GetOptions<Guid>();
-            //opt2.Formats = new[] { "N" };
-            
-            writer.Configuration.TypeConverterCache.AddConverter(typeof(Guid), new GuidFormatter());
+            writer.Configuration.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());
 
             var map = writer.Configuration.AutoMap<T>();
             SortColumns(dict, map);
@@ -94,12 +96,15 @@ namespace FastInsert
 
         private static IEnumerable<string> GetTableColumns(IDbConnection connection, string tableName, string dbName)
         {
-            var command = connection.CreateCommand();
-            command.CommandText = $@"SELECT c.column_name
+            using var command = connection.CreateCommand();
+            command.CommandText = @"SELECT c.column_name
             FROM INFORMATION_SCHEMA.COLUMNS c
-            WHERE c.table_name = '{tableName}'
-                -- AND c.table_schema = '{dbName}'";
+            WHERE c.table_name = @tableName
+                 AND c.table_schema = @schema";
 
+            command.Parameters.Add(new MySqlParameter("tableName", tableName));
+            command.Parameters.Add(new MySqlParameter("schema", dbName));
+            
             using var reader = command.ExecuteReader();
 
             while (!reader.IsClosed && reader.Read())

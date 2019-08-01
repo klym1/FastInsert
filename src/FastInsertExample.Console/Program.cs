@@ -2,9 +2,10 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using FastInsert;
 using MySql.Data.MySqlClient;
 
-namespace FastInsert
+namespace FastInsertExample.Console
 {
     class Program
     {
@@ -13,6 +14,7 @@ namespace FastInsert
             var connBuilder = new MySqlConnectionStringBuilder
             {
                 AllowLoadLocalInfile = true,
+                AllowUserVariables = true,
                 Database = "fastinsert",
                 UserID = "root",
                 Password = "root"
@@ -21,7 +23,6 @@ namespace FastInsert
             var tableName = "test";
 
             var conn = connBuilder.ToString();
-
             var connection = new MySqlConnection(conn);
 
             var list = Enumerable.Range(1, 100000)
@@ -32,12 +33,13 @@ namespace FastInsert
                         Text = "text" + it,
                         DateCol = DateTime.UtcNow.AddHours(it),
                         Guid = Guid.NewGuid()
-                    });
+                    }).ToList();
             
             var sw = Stopwatch.StartNew();
+
             await connection.FastInsertAsync(list, tableName);
             sw.Stop();
-            Console.WriteLine($"Inserted in {sw.ElapsedMilliseconds} ms");
+            System.Console.WriteLine($"Inserted in {sw.ElapsedMilliseconds} ms");
         }
     }
 
