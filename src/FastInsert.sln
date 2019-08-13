@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastInsert", "FastInsert\FastInsert.csproj", "{B1CAE171-5FE2-412A-9AC3-59FEA35E1D08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastInsertExample.Console", "FastInsertExample.Console\FastInsertExample.Console.csproj", "{C57A87DE-65DB-4670-ACA5-2D220184297F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastInsertExample.Console", "FastInsertExample.Console\FastInsertExample.Console.csproj", "{C57A87DE-65DB-4670-ACA5-2D220184297F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastInsert.Tests", "FastInsert.Tests\FastInsert.Tests.csproj", "{09CDF27E-882B-445F-AD5C-F044E161FEFA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C57A87DE-65DB-4670-ACA5-2D220184297F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C57A87DE-65DB-4670-ACA5-2D220184297F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C57A87DE-65DB-4670-ACA5-2D220184297F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09CDF27E-882B-445F-AD5C-F044E161FEFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09CDF27E-882B-445F-AD5C-F044E161FEFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09CDF27E-882B-445F-AD5C-F044E161FEFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09CDF27E-882B-445F-AD5C-F044E161FEFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
