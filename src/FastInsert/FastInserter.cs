@@ -23,16 +23,24 @@ namespace FastInsert
                 connection.Open();
 
             var fileName = "temp.csv";
+            var res = -1;
 
-            var tableColumns = GetTableColumns(connection, tableName, connection.Database);
+            try
+            {
+                var tableColumns = GetTableColumns(connection, tableName, connection.Database);
 
-            var classFields = await WriteToCsvFileAsync(list, fileName);
+                var classFields = await WriteToCsvFileAsync(list, fileName);
 
-            var tableDef = TableDefinitionFactory.BuildTableDefinition(classFields);
+                var tableDef = TableDefinitionFactory.BuildTableDefinition(classFields);
 
-            var query = BuildQuery(tableName, tableDef, fileName);
+                var query = BuildQuery(tableName, tableDef, fileName);
 
-            var res = ExecuteStatementAsync(connection, query);
+                res = ExecuteStatementAsync(connection, query);
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
 
             if(wasClosed)
                 connection.Close();
