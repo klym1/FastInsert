@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace FastInsert
 {
@@ -17,7 +18,7 @@ namespace FastInsert
                     var var = $"@var{transformColumnIndex++}";
 
                     fields.Add(var);
-                    transformations.Add($"SET `{col.Name}` = {col.TransformFunc(var)}");
+                    transformations.Add($"`{col.Name}` = {col.TransformFunc(var)}");
                 }
                 else
                 {
@@ -26,9 +27,9 @@ namespace FastInsert
             }
 
             var joinedFields = string.Join(", ", fields);
-            var joinedTransformations = string.Join("\n", transformations);
+            var joinedTransformations = (transformations.Any() ? "SET" : "" ) + string.Join(", ", transformations);
 
-            return $"({joinedFields})\n{joinedTransformations}";
+            return $"({joinedFields})\n{joinedTransformations}\n";
         }
     }
 }
