@@ -12,6 +12,7 @@ using MySql.Data.MySqlClient;
 
 namespace FastInsert
 {
+
     public static class FastInserter
     {
         public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, string tableName)
@@ -27,7 +28,9 @@ namespace FastInsert
 
             var classFields = await WriteToCsvFileAsync(list, fileName);
 
-            var query = BuildQuery(tableName, classFields, fileName);
+            var tableDef = TableDefinitionFactory.BuildTableDefinition(classFields);
+
+            var query = BuildQuery(tableName, tableDef, fileName);
 
             var res = ExecuteStatementAsync(connection, query);
 
@@ -36,6 +39,7 @@ namespace FastInsert
 
             return res;
         }
+                
 
         private static int ExecuteStatementAsync(IDbConnection connection, string query)
         {
@@ -44,29 +48,22 @@ namespace FastInsert
             return command.ExecuteNonQuery();
         }
          
-        private static string BuildQuery(string tableName, List<string> fields, string tempFilePath)
+        private static string BuildQuery(string tableName, TableDef tableDef, string tempFilePath)
         {
             var lineEnding = Environment.NewLine;
+            var fieldsExpression = FieldsExpressionBuilder.ToExpression(tableDef);
 
-            var fieldsC = string.Join(", ", fields.Select(f =>
-            {
-                if (string.Equals(f, "guid", StringComparison.OrdinalIgnoreCase))
-                    return "@var1";
-
-                return "`" + f + "`";
-            }));
-            
             return $@"LOAD DATA LOCAL INFILE '{tempFilePath}' 
                    INTO TABLE {tableName} 
                     COLUMNS TERMINATED BY ';' 
                     LINES TERMINATED BY '{lineEnding}'
                     IGNORE 1 LINES                    
-                    ({fieldsC}) 
-                    SET guid = UNHEX(@var1)
+                    {fieldsExpression}
                     ";
         }
+               
 
-        private static Task<List<string>> WriteToCsvFileAsync<T>(IEnumerable<T> list, string fileName)
+        private static Task<List<CsvColumnDef>> WriteToCsvFileAsync<T>(IEnumerable<T> list, string fileName)
         {
             using var fileStream = new FileStream(fileName, FileMode.Create);
             using TextWriter textWriter = new StreamWriter(fileStream);
@@ -82,7 +79,12 @@ namespace FastInsert
             var map = writer.Configuration.AutoMap<T>();
             
             writer.WriteRecords(list);
-            return Task.FromResult(map.MemberMaps.Select(m => m.Data.Names[0]).ToList());
+            return Task.FromResult(map.MemberMaps.Select(m => new CsvColumnDef
+            {
+                Name = m.Data.Names[0],
+                MemberInfo = m.Data.Member
+            }
+            ).ToList());
         }
         
         private static IEnumerable<string> GetTableColumns(IDbConnection connection, string tableName, string dbName)
