@@ -1,5 +1,7 @@
 # C# library for super fast MySql bulk inserts (ADO.Net)
 
+[![Build Status](https://travis-ci.org/klym1/FastInsert.svg?branch=master)](https://travis-ci.org/klym1/FastInsert)
+
 ## How does it work?
 
 It is a common fact that the fastest way to insert many rows in MySql is by using `LOAD DATA INFILE` query which loads file contents and inserts the rows into a table with lightning fast speed.
