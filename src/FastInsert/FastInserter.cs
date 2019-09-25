@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
-using CsvHelper.Configuration;
-using MySql.Data.MySqlClient;
 
 namespace FastInsert
 {
@@ -103,9 +101,17 @@ namespace FastInsert
             WHERE c.table_name = @tableName
                  AND c.table_schema = @schema";
 
-            command.Parameters.Add(new MySqlParameter("tableName", tableName));
-            command.Parameters.Add(new MySqlParameter("schema", dbName));
+            var param1 = command.CreateParameter();
+            param1.ParameterName = "tableName";
+            param1.Value = tableName;
             
+            var param2 = command.CreateParameter();
+            param2.ParameterName = "schema";
+            param2.Value = dbName;
+
+            command.Parameters.Add(param1);
+            command.Parameters.Add(param2);
+
             using var reader = command.ExecuteReader();
 
             while (!reader.IsClosed && reader.Read())
