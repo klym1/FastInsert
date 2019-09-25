@@ -23,8 +23,8 @@ namespace FastInsert.Tests
                 AllowLoadLocalInfile = true,
                 AllowUserVariables = true,
                 Database = "tests",
-                UserID = "root",
-                Password = "root"
+                UserID = "test",
+                Password = "pass"
             };
 
             var conn = connBuilder.ToString();
