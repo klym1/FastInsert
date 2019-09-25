@@ -3,3 +3,9 @@ mono: none
 dotnet: 3.0
 script:
 - dotnet test src/FastInsert.Tests/FastInsert.Tests.csproj
+services:
+- mysql
+before_install:
+- mysql -u root -e 'CREATE DATABASE tests;'
+- mysql -u root -e "CREATE USER 'root'@'localhost' IDENTIFIED BY 'root';"
+- mysql -u root -e "GRANT ALL ON tests.* TO 'root'@'localhost';"
