@@ -47,7 +47,7 @@ namespace FastInsert
 
                 var query = BuildQuery(tableName, tableDef, fileName);
 
-                var affectedRows = ExecuteStatementAsync(connection, query);
+                var affectedRows = connection.Execute(query);
             }
             finally
             {
@@ -60,32 +60,19 @@ namespace FastInsert
 
         private static bool ConnectionStringValid(string connString, out string o)
         {
+            var connStr = ConnectionStringParser.Parse(connString);
+
             o = "";
 
-            var pairs = connString
-                .Split(';')
-                .Select(it => it.Split('='))
-                .Select(it => (Key:it[0], Value:it[1]));
-
-            if (!pairs.Any(p => string.Equals(p.Key, "AllowUserVariables", StringComparison.OrdinalIgnoreCase)
-                                && string.Equals(p.Value, "true", StringComparison.OrdinalIgnoreCase)))
-            {
+            if (!connStr.AllowUserVariables)
                 o = "AllowUserVariables variable must be set to 'true' in order to perform data transformations";
-                return false;
-            }
 
-            return true;
+            if (!connStr.AllowLoadLocalInfile)
+                o = "AllowLoadLocalInfile variable must be set to 'true' in order to allow MySql Load infile operation";
+
+            return string.IsNullOrEmpty(o);
         }
-
-
-        private static int ExecuteStatementAsync(IDbConnection connection, string query)
-        {
-            using var command = connection.CreateCommand();
-            command.CommandText = query;
-            
-            return command.ExecuteNonQuery();
-        }
-         
+        
         private static string BuildQuery(string tableName, TableDef tableDef, string tempFilePath)
         {
             var lineEnding = Environment.NewLine;
