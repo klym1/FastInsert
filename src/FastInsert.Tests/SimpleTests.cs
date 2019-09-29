@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -52,6 +53,9 @@ namespace FastInsert.Tests
             await connection.FastInsertAsync(list, "test");
 
             _testOutputHelper.WriteLine("After insert");
+
+            _testOutputHelper.WriteLine("File contents:");
+            _testOutputHelper.WriteLine(File.ReadAllText("temp.csv"));
 
             var rows = await connection.ExecuteScalarAsync<int>("select count(*) from test");
 

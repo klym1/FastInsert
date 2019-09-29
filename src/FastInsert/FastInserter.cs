@@ -13,7 +13,8 @@ namespace FastInsert
 
     public static class FastInserter
     {
-        public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, string tableName)
+        public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, 
+            string tableName)
         {
             var wasClosed = connection.State == ConnectionState.Closed;
 
@@ -37,7 +38,7 @@ namespace FastInsert
             }
             finally
             {
-                File.Delete(fileName);
+               // File.Delete(fileName);
             }
 
             if(wasClosed)
