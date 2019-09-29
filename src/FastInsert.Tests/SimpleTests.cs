@@ -3,31 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using MySql.Data.MySqlClient;
 using Xunit;
 
 namespace FastInsert.Tests
 {
-    public class SimpleTests
+    public class SimpleTests : BaseTests
     {
         [Fact]
         public async Task GeneratedDataIsCorrectlyInserted()
         {
-            SqlMapper.RemoveTypeMap(typeof(Guid));
-            SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
-
-            var connBuilder = new MySqlConnectionStringBuilder
-            {
-                AllowLoadLocalInfile = true,
-                AllowUserVariables = true,
-                Database = "tests",
-                UserID = "test",
-                Password = "pass"
-            };
-
-            var conn = connBuilder.ToString();
-            var connection = new MySqlConnection(conn);
-
+            var connection = GetConnection();
             var list = GenerateData().ToList();
 
             await connection.ExecuteAsync("drop table if exists test");
@@ -48,10 +33,10 @@ namespace FastInsert.Tests
             Assert.Equal(list[0].Int, actualData[0].Int);
             Assert.Equal(list[0].Text, actualData[0].Text);
         }
-
+        
         private static IEnumerable<Table> GenerateData()
         {
-            return Enumerable.Range(1, 1)
+            return Enumerable.Range(1, 100000)
                 .Select(it =>
                     new Table
                     {
@@ -61,13 +46,13 @@ namespace FastInsert.Tests
                         Guid = Guid.NewGuid()
                     });
         }
-    }
 
-    public class Table
-    {
-        public Guid Guid { get; set; }
-        public DateTime DateCol { get; set; }
-        public int Int { get; set; }
-        public string Text { get; set; }
+        private class Table
+        {
+            public Guid Guid { get; set; }
+            public DateTime DateCol { get; set; }
+            public int Int { get; set; }
+            public string Text { get; set; }
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace FastInsert
             if(!type.Contains("MySqlConnection"))
                 throw new ArgumentException("This extension can only be used with MySqlConnection");
 
-            if(!ConnectionStringValid(connection.ConnectionString, out var error))
+            if(!ConnectionStringValidator.ConnectionStringValid(connection.ConnectionString, out var error))
                 throw new ArgumentException(error);
             
             var wasClosed = connection.State == ConnectionState.Closed;
@@ -58,21 +58,6 @@ namespace FastInsert
                 connection.Close();
         }
 
-        private static bool ConnectionStringValid(string connString, out string o)
-        {
-            var connStr = ConnectionStringParser.Parse(connString);
-
-            o = "";
-
-            if (!connStr.AllowUserVariables)
-                o = "AllowUserVariables variable must be set to 'true' in order to perform data transformations";
-
-            if (!connStr.AllowLoadLocalInfile)
-                o = "AllowLoadLocalInfile variable must be set to 'true' in order to allow MySql Load infile operation";
-
-            return string.IsNullOrEmpty(o);
-        }
-        
         private static string BuildQuery(string tableName, TableDef tableDef, string tempFilePath)
         {
             var lineEnding = Environment.NewLine;
@@ -86,8 +71,7 @@ namespace FastInsert
                     {fieldsExpression}
                     ";
         }
-               
-
+        
         private static Task<List<CsvColumnDef>> WriteToCsvFileAsync<T>(IEnumerable<T> list, string fileName)
         {
             using var fileStream = new FileStream(fileName, FileMode.Create);
