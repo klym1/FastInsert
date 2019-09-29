@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using MySql.Data.MySqlClient;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace FastInsert.Tests
 {
@@ -43,7 +40,7 @@ namespace FastInsert.Tests
                   `text` text NOT NULL
                   );  ");
 
-            await connection.FastInsertAsync(list, "test");
+            await connection.FastInsertAsync(list, o => o.ToTable("test"));
 
             var actualData = (await connection.QueryAsync<Table>("select * from test")).ToList();
 

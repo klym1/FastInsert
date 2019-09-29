@@ -10,22 +10,32 @@ using CsvHelper;
 
 namespace FastInsert
 {
-
     public static class FastInserter
     {
-        public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, 
-            string tableName)
+        public static async Task FastInsertAsync<T>(this IDbConnection connection, 
+            IEnumerable<T> list, 
+            Action<FastInsertConfig> conf = null)
         {
+            var config = new FastInsertConfig(typeof(T));
+
+            conf?.Invoke(config);
+
+            var type = connection.GetType().ToString();
+
+            if(!type.Contains("MySqlConnection"))
+                throw new ArgumentException("This extension can only be used with MySqlConnection");
+
             var wasClosed = connection.State == ConnectionState.Closed;
 
             if (wasClosed)
                 connection.Open();
 
             var fileName = "temp.csv";
-            var res = -1;
-
+            
             try
             {
+                var tableName = config.TableNameResolver.GetTableName();
+
                 var tableColumns = GetTableColumns(connection, tableName, connection.Database);
 
                 var classFields = await WriteToCsvFileAsync(list, fileName);
@@ -34,7 +44,7 @@ namespace FastInsert
 
                 var query = BuildQuery(tableName, tableDef, fileName);
 
-                res = ExecuteStatementAsync(connection, query);
+                var affectedRows = ExecuteStatementAsync(connection, query);
             }
             finally
             {
@@ -43,8 +53,6 @@ namespace FastInsert
 
             if(wasClosed)
                 connection.Close();
-
-            return res;
         }
                 
 
