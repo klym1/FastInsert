@@ -13,7 +13,8 @@ namespace FastInsert
 
     public static class FastInserter
     {
-        public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, string tableName)
+        public static async Task<int> FastInsertAsync<T>(this IDbConnection connection, IEnumerable<T> list, 
+            string tableName)
         {
             var wasClosed = connection.State == ConnectionState.Closed;
 
@@ -75,6 +76,7 @@ namespace FastInsert
             using TextWriter textWriter = new StreamWriter(fileStream);
             using var writer = new CsvWriter(textWriter);
             writer.Configuration.HasHeaderRecord = true;
+            writer.Configuration.Delimiter = ";";
 
             var opt1 = writer.Configuration.TypeConverterOptionsCache.GetOptions<DateTime>();
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
