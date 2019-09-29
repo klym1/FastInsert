@@ -63,7 +63,12 @@ namespace FastInsert.Tests
 
             while (await reader.ReadAsync())
             {
-                _testOutputHelper.WriteLine($"col {i}: {reader[i]}");
+                for (var j = 0; j < reader.FieldCount; j++)
+                {
+                    var val = reader[j];
+                    _testOutputHelper.WriteLine($"col {j}: {val}");
+                }
+                
                 i++;
             }
 
