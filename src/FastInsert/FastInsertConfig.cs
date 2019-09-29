@@ -5,10 +5,12 @@ namespace FastInsert
     public class FastInsertConfig
     {
         public ITableNameResolver TableNameResolver { get; set; }
+        public int BatchSize { get; set; }
 
         public FastInsertConfig(Type elemType)
         {
             TableNameResolver = new AutoTableNameResolver(elemType);
+            BatchSize = 100000;
         }
     }
 
@@ -17,6 +19,12 @@ namespace FastInsert
         public static FastInsertConfig ToTable(this FastInsertConfig conf, string tableName)
         {
             conf.TableNameResolver = new ManualTableNameResolver(tableName);
+            return conf;
+        }
+
+        public static FastInsertConfig BatchSize(this FastInsertConfig conf, int batchSize)
+        {
+            conf.BatchSize = batchSize;
             return conf;
         }
     }

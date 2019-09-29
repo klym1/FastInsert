@@ -10,9 +10,37 @@ namespace FastInsert.Tests
     public class SimpleTests : BaseTests
     {
         [Fact]
+        public async Task InsertAllTheDataInSeveralBatches()
+        {
+            using var connection = GetConnection();
+            var list = Enumerable.Range(1, 10)
+                .Select(it =>
+                    new Test123
+                    {
+                        Int32 = it,
+                        MediumText = "text" + it,
+                    }).ToList();
+
+            var tableName = "Test123";
+
+            await connection.ExecuteAsync($"drop table if exists `{tableName}`");
+            await connection.ExecuteAsync($@"
+                CREATE TABLE IF NOT EXISTS `{tableName}` (                 
+                  `int32` int NOT NULL,
+                  `mediumText` mediumText NOT NULL
+                  );  ");
+
+            await connection.FastInsertAsync(list, o => o.BatchSize(2));
+
+            var actualNumberOfRows = await connection.ExecuteScalarAsync<int>($"select count(*) from {tableName}");
+
+            Assert.Equal(list.Count, actualNumberOfRows);
+        }
+
+        [Fact]
         public async Task GeneratedDataIsCorrectlyInserted()
         {
-            var connection = GetConnection();
+            using var connection = GetConnection();
             var list = GenerateData().ToList();
 
             await connection.ExecuteAsync("drop table if exists test");
@@ -36,7 +64,7 @@ namespace FastInsert.Tests
         
         private static IEnumerable<Table> GenerateData()
         {
-            return Enumerable.Range(1, 100000)
+            return Enumerable.Range(1, 100)
                 .Select(it =>
                     new Table
                     {
@@ -45,6 +73,12 @@ namespace FastInsert.Tests
                         DateCol = DateTime.UtcNow.AddHours(it),
                         Guid = Guid.NewGuid()
                     });
+        }
+
+        private class Test123
+        {
+            public int Int32 { get; set; }
+            public string MediumText { get; set; }
         }
 
         private class Table
