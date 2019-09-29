@@ -45,14 +45,17 @@ namespace FastInsert
 
             foreach (var partition in EnumerableExtensions.GetPartitions(list, config.BatchSize))
             {
-                try
+                lock (connection)
                 {
-                    WriteToCsvFileAsync(classConfig, partition, fileName);
-                    connection.Execute(query);
-                }
-                finally
-                {
-                    File.Delete(fileName);
+                    try
+                    {
+                        WriteToCsvFileAsync(classConfig, partition, fileName);
+                        connection.Execute(query);
+                    }
+                    finally
+                    {
+                        File.Delete(fileName);
+                    }
                 }
             }
             
