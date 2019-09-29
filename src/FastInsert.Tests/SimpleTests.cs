@@ -13,13 +13,6 @@ namespace FastInsert.Tests
 {
     public class SimpleTests
     {
-        private readonly ITestOutputHelper _testOutputHelper;
-
-        public SimpleTests(ITestOutputHelper testOutputHelper)
-        {
-            _testOutputHelper = testOutputHelper;
-        }
-
         [Fact]
         public async Task GeneratedDataIsCorrectlyInserted()
         {
@@ -51,28 +44,6 @@ namespace FastInsert.Tests
                   );  ");
 
             await connection.FastInsertAsync(list, "test");
-
-            _testOutputHelper.WriteLine("After insert");
-
-            _testOutputHelper.WriteLine("File contents:");
-            _testOutputHelper.WriteLine(File.ReadAllText("temp.csv"));
-
-            var rows = await connection.ExecuteScalarAsync<int>("select count(*) from test");
-
-            _testOutputHelper.WriteLine($"Number of rows: {rows}");
-
-            var reader = await connection.ExecuteReaderAsync("select * from test");
-
-            while (await reader.ReadAsync())
-            {
-                for (var j = 0; j < reader.FieldCount; j++)
-                {
-                    var val = reader[j];
-                    _testOutputHelper.WriteLine($"col {j}: {val}");
-                }
-            }
-
-            await reader.DisposeAsync();
 
             var actualData = (await connection.QueryAsync<Table>("select * from test")).ToList();
 

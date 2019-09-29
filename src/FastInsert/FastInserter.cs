@@ -38,7 +38,7 @@ namespace FastInsert
             }
             finally
             {
-               // File.Delete(fileName);
+                File.Delete(fileName);
             }
 
             if(wasClosed)
