@@ -76,6 +76,7 @@ namespace FastInsert
             using TextWriter textWriter = new StreamWriter(fileStream);
             using var writer = new CsvWriter(textWriter);
             writer.Configuration.HasHeaderRecord = true;
+            writer.Configuration.Delimiter = ";";
 
             var opt1 = writer.Configuration.TypeConverterOptionsCache.GetOptions<DateTime>();
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
