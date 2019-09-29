@@ -14,7 +14,6 @@ namespace FastInsert.Tests
         public async Task GeneratedDataIsCorrectlyInserted()
         {
             SqlMapper.RemoveTypeMap(typeof(Guid));
-            SqlMapper.RemoveTypeMap(typeof(Guid?));
             SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
 
             var connBuilder = new MySqlConnectionStringBuilder

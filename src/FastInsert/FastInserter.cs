@@ -25,6 +25,9 @@ namespace FastInsert
             if(!type.Contains("MySqlConnection"))
                 throw new ArgumentException("This extension can only be used with MySqlConnection");
 
+            if(!ConnectionStringValid(connection.ConnectionString, out var error))
+                throw new ArgumentException(error);
+            
             var wasClosed = connection.State == ConnectionState.Closed;
 
             if (wasClosed)
@@ -54,12 +57,32 @@ namespace FastInsert
             if(wasClosed)
                 connection.Close();
         }
-                
+
+        private static bool ConnectionStringValid(string connString, out string o)
+        {
+            o = "";
+
+            var pairs = connString
+                .Split(';')
+                .Select(it => it.Split('='))
+                .Select(it => (Key:it[0], Value:it[1]));
+
+            if (!pairs.Any(p => string.Equals(p.Key, "AllowUserVariables", StringComparison.OrdinalIgnoreCase)
+                                && string.Equals(p.Value, "true", StringComparison.OrdinalIgnoreCase)))
+            {
+                o = "AllowUserVariables variable must be set to 'true' in order to perform data transformations";
+                return false;
+            }
+
+            return true;
+        }
+
 
         private static int ExecuteStatementAsync(IDbConnection connection, string query)
         {
             using var command = connection.CreateCommand();
             command.CommandText = query;
+            
             return command.ExecuteNonQuery();
         }
          
