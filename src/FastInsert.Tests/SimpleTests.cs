@@ -59,8 +59,6 @@ namespace FastInsert.Tests
 
             var reader = await connection.ExecuteReaderAsync("select * from test");
 
-            var i = 0;
-
             while (await reader.ReadAsync())
             {
                 for (var j = 0; j < reader.FieldCount; j++)
@@ -68,9 +66,9 @@ namespace FastInsert.Tests
                     var val = reader[j];
                     _testOutputHelper.WriteLine($"col {j}: {val}");
                 }
-                
-                i++;
             }
+
+            await reader.DisposeAsync();
 
             var actualData = (await connection.QueryAsync<Table>("select * from test")).ToList();
 
