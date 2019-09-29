@@ -53,7 +53,7 @@ namespace FastInsert.Tests
 
             _testOutputHelper.WriteLine("After insert");
 
-            var rows = await connection.ExecuteScalarAsync<Table>("select count(*) from test");
+            var rows = await connection.ExecuteScalarAsync<int>("select count(*) from test");
 
             _testOutputHelper.WriteLine($"Number of rows: {rows}");
 
