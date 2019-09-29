@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 using Dapper;
 using MySql.Data.MySqlClient;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FastInsert.Tests
 {
     public class SimpleTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public SimpleTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task GeneratedDataIsCorrectlyInserted()
         {
@@ -42,6 +50,22 @@ namespace FastInsert.Tests
                   );  ");
 
             await connection.FastInsertAsync(list, "test");
+
+            _testOutputHelper.WriteLine("After insert");
+
+            var rows = await connection.ExecuteScalarAsync<Table>("select count(*) from test");
+
+            _testOutputHelper.WriteLine($"Number of rows: {rows}");
+
+            var reader = await connection.ExecuteReaderAsync("select * from test");
+
+            var i = 0;
+
+            while (await reader.ReadAsync())
+            {
+                _testOutputHelper.WriteLine($"col {i}: {reader[i]}");
+                i++;
+            }
 
             var actualData = (await connection.QueryAsync<Table>("select * from test")).ToList();
 
