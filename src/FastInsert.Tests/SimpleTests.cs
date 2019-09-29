@@ -30,7 +30,7 @@ namespace FastInsert.Tests
                   `mediumText` mediumText NOT NULL
                   );  ");
 
-            await connection.FastInsertAsync(list, o => o.BatchSize(2));
+            await connection.FastInsertAsync(list, o => o.BatchSize(2).ToTable(tableName));
 
             var actualNumberOfRows = await connection.ExecuteScalarAsync<int>($"select count(*) from {tableName}");
 
