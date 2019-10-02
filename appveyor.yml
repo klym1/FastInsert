@@ -16,7 +16,7 @@ init:
   - git config --global core.autocrlf input
   - SET PATH=%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%
 
-build_script:
+before_test:
   - mysql -u root -e 'CREATE DATABASE tests;'
   - mysql -u root -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'pass';"
   - mysql -u root -e "GRANT ALL ON tests.* TO 'test'@'localhost';"
