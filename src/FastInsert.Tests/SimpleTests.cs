@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace FastInsert.Tests
 {
@@ -49,11 +48,10 @@ namespace FastInsert.Tests
 
             var actualNumberOfRows = await connection.ExecuteScalarAsync<int>($"select count(*) from {tableName}");
 
-            Assert.Equal(list.Count, actualNumberOfRows+1);
+            Assert.Equal(list.Count, actualNumberOfRows);
         }
 
         [Fact]
-        
         public async Task GeneratedDataIsCorrectlyInserted()
         {
             using var connection = GetConnection();
