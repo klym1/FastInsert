@@ -1,14 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace FastInsert.Tests
 {
     public class SimpleTests : BaseTests
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public SimpleTests(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public async Task InsertAllTheDataInSeveralBatches()
         {
@@ -52,7 +63,11 @@ namespace FastInsert.Tests
                   `text` text NOT NULL
                   );  ");
 
-            await connection.FastInsertAsync(list, o => o.ToTable("test"));
+            _testOutputHelper.WriteLine("Table created");
+
+            await connection.FastInsertAsync(list, o => o
+                .ToTable("test")
+                .Writer(new ConsoleWriter(_testOutputHelper)));
 
             var actualData = (await connection.QueryAsync<Table>("select * from test")).ToList();
 
@@ -87,6 +102,23 @@ namespace FastInsert.Tests
             public DateTime DateCol { get; set; }
             public int Int { get; set; }
             public string Text { get; set; }
+        }
+    }
+
+    public class ConsoleWriter : TextWriter
+    {
+        public override Encoding Encoding{ get; }
+
+        private ITestOutputHelper _helper;
+
+        public ConsoleWriter(ITestOutputHelper helper)
+        {
+            _helper = helper;
+        }
+
+        public override void WriteLine(string value)
+        {
+            _helper.WriteLine(value);
         }
     }
 }

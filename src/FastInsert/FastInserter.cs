@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -33,27 +34,31 @@ namespace FastInsert
             if (wasClosed)
                 connection.Open();
 
-            var fileName = "temp.csv";
-
             var tableName = config.TableNameResolver.GetTableName();
 
             var tableColumns = GetTableColumns(connection, tableName, connection.Database);
             var classConfig = GetConfiguration<T>();
             var classFields = GetClassFields(classConfig);
             var tableDef = TableDefinitionFactory.BuildTableDefinition(classFields);
-            var query = BuildQuery(tableName, tableDef, fileName);
-
+            
             foreach (var partition in EnumerableExtensions.GetPartitions(list, config.BatchSize))
             {
                 lock (connection)
                 {
+                    var fileName = $"{Guid.NewGuid()}.csv";
+
                     try
                     {
+                        var query = BuildQuery(tableName, tableDef, fileName);
+
                         WriteToCsvFileAsync(classConfig, partition, fileName);
                         connection.Execute(query);
                     }
                     finally
                     {
+                        config.Writer?.WriteLine(fileName + ":");
+                        config.Writer?.WriteLine(File.ReadAllText(fileName));
+
                         File.Delete(fileName);
                     }
                 }

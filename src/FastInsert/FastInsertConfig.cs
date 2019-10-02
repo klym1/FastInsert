@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace FastInsert
 {
@@ -6,6 +7,7 @@ namespace FastInsert
     {
         public ITableNameResolver TableNameResolver { get; set; }
         public int BatchSize { get; set; }
+        public TextWriter Writer { get; set; }
 
         public FastInsertConfig(Type elemType)
         {
@@ -19,6 +21,12 @@ namespace FastInsert
         public static FastInsertConfig ToTable(this FastInsertConfig conf, string tableName)
         {
             conf.TableNameResolver = new ManualTableNameResolver(tableName);
+            return conf;
+        }
+
+        public static FastInsertConfig Writer(this FastInsertConfig conf, TextWriter writer)
+        {
+            conf.Writer = writer;
             return conf;
         }
 
