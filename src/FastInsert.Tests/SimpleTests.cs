@@ -49,7 +49,7 @@ namespace FastInsert.Tests
 
             var actualNumberOfRows = await connection.ExecuteScalarAsync<int>($"select count(*) from {tableName}");
 
-            Assert.Equal(list.Count, actualNumberOfRows);
+            Assert.Equal(list.Count, actualNumberOfRows+1);
         }
 
         [Fact]
