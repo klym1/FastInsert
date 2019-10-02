@@ -26,3 +26,7 @@ build_script:
   - createdb test
   # MySQL
   - mysql -e "create database tests;" --user=test
+
+test_script:
+  - cd src/FastInsert.Tests
+  - dotnet test
