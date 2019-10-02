@@ -18,9 +18,9 @@ init:
   - SET PATH=%MYSQL_PATH%\bin;%PATH%
 
 before_test:
-  - mysql -u root -e 'CREATE DATABASE tests;'
-  - mysql -u root -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'pass';"
-  - mysql -u root -e "GRANT ALL ON tests.* TO 'test'@'localhost';"
+  - mysql -e 'CREATE DATABASE tests;' --user=root
+  - mysql -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'pass';" --user=root
+  - mysql -e "GRANT ALL ON tests.* TO 'test'@'localhost';" --user=root
 
 build: off
 
