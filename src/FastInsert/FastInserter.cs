@@ -49,7 +49,7 @@ namespace FastInsert
                 {
                     var csvSettings = new CsvFileSettings
                     {
-                        Delimiter = ";;",
+                        Delimiter = ";",
                         LineEnding = "\r\n",
                         Path = fileName,
                         FieldEscapedByChar = "\\\\",
