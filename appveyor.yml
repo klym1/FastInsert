@@ -1,0 +1,28 @@
+image: Visual Studio 2017
+
+skip_branch_with_pr: true
+skip_tags: true
+
+install:
+  - choco install dotnetcore-sdk --version 3.0.100
+
+environment:
+  Appveyor: true
+  # MySQL
+  MYSQL_PATH: C:\Program Files\MySql\MySQL Server 5.7
+  MYSQL_PWD: pass
+  MYSQL_ENV_MYSQL_USER: test
+  MYSQL_ENV_MYSQL_PASSWORD: pass
+  MYSQL_ENV_MYSQL_DATABASE: tests
+services:
+  - mysql
+
+init:
+  - git config --global core.autocrlf input
+  - SET PATH=%POSTGRES_PATH%\bin;%MYSQL_PATH%\bin;%PATH%
+
+build_script:
+  # Postgres
+  - createdb test
+  # MySQL
+  - mysql -e "create database tests;" --user=test

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -33,32 +34,42 @@ namespace FastInsert
             if (wasClosed)
                 connection.Open();
 
-            var fileName = "temp.csv";
-
             var tableName = config.TableNameResolver.GetTableName();
 
             var tableColumns = GetTableColumns(connection, tableName, connection.Database);
             var classConfig = GetConfiguration<T>();
             var classFields = GetClassFields(classConfig);
             var tableDef = TableDefinitionFactory.BuildTableDefinition(classFields);
-            var query = BuildQuery(tableName, tableDef, fileName);
 
             foreach (var partition in EnumerableExtensions.GetPartitions(list, config.BatchSize))
             {
-                lock (connection)
+                var fileName = $"{Guid.NewGuid()}.csv";
+
+                try
                 {
-                    try
+                    var csvSettings = new CsvFileSettings
                     {
-                        WriteToCsvFileAsync(classConfig, partition, fileName);
-                        connection.Execute(query);
-                    }
-                    finally
-                    {
-                        File.Delete(fileName);
-                    }
+                        Delimiter = ";;",
+                        LineEnding = "\r\n",
+                        Path = fileName,
+                        FieldEscapedByChar = "\\\\",
+                        FieldEnclosedByChar = "",
+                    };
+
+                    var query = BuildQuery(tableName, tableDef, csvSettings);
+
+                    WriteToCsvFileAsync(classConfig, partition, csvSettings);
+                    await connection.ExecuteAsync(query);
+                }
+                finally
+                {
+                    config.Writer?.WriteLine(fileName + ":");
+                    config.Writer?.WriteLine(File.ReadAllText(fileName));
+
+                    File.Delete(fileName);
                 }
             }
-            
+
             if (wasClosed)
                 connection.Close();
         }
@@ -73,15 +84,14 @@ namespace FastInsert
             );
         }
 
-        private static string BuildQuery(string tableName, TableDef tableDef, string tempFilePath)
+        private static string BuildQuery(string tableName, TableDef tableDef, CsvFileSettings settings)
         {
-            var lineEnding = Environment.NewLine;
             var fieldsExpression = FieldsExpressionBuilder.ToExpression(tableDef);
 
-            return $@"LOAD DATA LOCAL INFILE '{tempFilePath}' 
+            return $@"LOAD DATA LOCAL INFILE '{settings.Path}' 
                    INTO TABLE {tableName} 
-                    COLUMNS TERMINATED BY ';' 
-                    LINES TERMINATED BY '{lineEnding}'
+                    COLUMNS TERMINATED BY '{settings.Delimiter}' ENCLOSED BY '{settings.FieldEnclosedByChar}' ESCAPED BY '{settings.FieldEscapedByChar}'
+                    LINES TERMINATED BY '{settings.LineEnding}' STARTING BY ''
                     IGNORE 1 LINES                    
                     {fieldsExpression}
                     ";
@@ -89,11 +99,7 @@ namespace FastInsert
 
         private static ClassMap<T> GetConfiguration<T>()
         {
-            var conf = new Configuration
-            {
-                HasHeaderRecord = true, 
-                Delimiter = ";"
-            };
+            var conf = new Configuration();
 
             var opt1 = conf.TypeConverterOptionsCache.GetOptions<DateTime>();
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
@@ -102,15 +108,18 @@ namespace FastInsert
             conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());
 
             var map = conf.AutoMap<T>();
+            
             return map;
         }
 
-        private static void WriteToCsvFileAsync<T>(ClassMap<T> classMap, IEnumerable<T> list, string fileName)
+        private static void WriteToCsvFileAsync<T>(ClassMap classMap, IEnumerable<T> list, CsvFileSettings settings)
         {
-            using var fileStream = new FileStream(fileName, FileMode.Create);
+            using var fileStream = new FileStream(settings.Path, FileMode.Create);
             using var textWriter = new StreamWriter(fileStream);
             using var writer = new CsvWriter(textWriter);
+            writer.Configuration.Delimiter = settings.Delimiter;
             writer.Configuration.RegisterClassMap(classMap);
+
             writer.WriteRecords(list);
         }
         
@@ -141,5 +150,15 @@ namespace FastInsert
                 yield return str;
             }
         }
+    }
+
+    public class CsvFileSettings
+    {
+        public string Path { get; set; }
+        public string LineEnding { get; set; }
+        public string Delimiter { get; set; }
+
+        public string FieldEnclosedByChar { get; set; }
+        public string FieldEscapedByChar { get; set; }
     }
 }
