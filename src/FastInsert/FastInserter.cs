@@ -50,8 +50,10 @@ namespace FastInsert
                     var csvSettings = new CsvFileSettings
                     {
                         Delimiter = ";;",
-                        LineEnding = Environment.NewLine,
-                        Path = fileName
+                        LineEnding = "\r\n",
+                        Path = fileName,
+                        FieldEscapedByChar = "\\\\",
+                        FieldEnclosedByChar = "",
                     };
 
                     var query = BuildQuery(tableName, tableDef, csvSettings);
@@ -88,8 +90,8 @@ namespace FastInsert
 
             return $@"LOAD DATA LOCAL INFILE '{settings.Path}' 
                    INTO TABLE {tableName} 
-                    COLUMNS TERMINATED BY '{settings.Delimiter}' 
-                    LINES TERMINATED BY '{settings.LineEnding}'
+                    COLUMNS TERMINATED BY '{settings.Delimiter}' ENCLOSED BY '{settings.FieldEnclosedByChar}' ESCAPED BY '{settings.FieldEscapedByChar}'
+                    LINES TERMINATED BY '{settings.LineEnding}' STARTING BY ''
                     IGNORE 1 LINES                    
                     {fieldsExpression}
                     ";
@@ -155,5 +157,8 @@ namespace FastInsert
         public string Path { get; set; }
         public string LineEnding { get; set; }
         public string Delimiter { get; set; }
+
+        public string FieldEnclosedByChar { get; set; }
+        public string FieldEscapedByChar { get; set; }
     }
 }
