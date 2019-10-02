@@ -20,7 +20,7 @@ namespace FastInsert.Tests
             _testOutputHelper = testOutputHelper;
         }
 
-        [Fact(Skip = "specific reason")]
+        [Fact]
         public async Task InsertAllTheDataInSeveralBatches()
         {
             using var connection = GetConnection();
@@ -41,7 +41,11 @@ namespace FastInsert.Tests
                   `mediumText` mediumText NOT NULL
                   );  ");
 
-            await connection.FastInsertAsync(list, o => o.BatchSize(2).ToTable(tableName));
+            await connection.FastInsertAsync(list, o => o
+                .BatchSize(2)
+                .ToTable(tableName)
+                .Writer(new ConsoleWriter(_testOutputHelper))
+            );
 
             var actualNumberOfRows = await connection.ExecuteScalarAsync<int>($"select count(*) from {tableName}");
 
