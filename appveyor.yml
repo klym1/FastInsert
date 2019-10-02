@@ -9,6 +9,9 @@ install:
 environment:
   Appveyor: true
     
+services:
+  - mysql
+    
 before_test:
   - mysql -u root -e 'CREATE DATABASE tests;'
   - mysql -u root -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'pass';"
