@@ -107,6 +107,7 @@ namespace FastInsert
             conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());
 
             var map = conf.AutoMap<T>();
+            
             return map;
         }
 
@@ -116,6 +117,7 @@ namespace FastInsert
             using var textWriter = new StreamWriter(fileStream);
             using var writer = new CsvWriter(textWriter);
             writer.Configuration.RegisterClassMap(classMap);
+
             writer.WriteRecords(list);
         }
         

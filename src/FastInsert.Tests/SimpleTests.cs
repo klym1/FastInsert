@@ -20,7 +20,7 @@ namespace FastInsert.Tests
             _testOutputHelper = testOutputHelper;
         }
 
-        [Fact]
+        [Fact(Skip = "specific reason")]
         public async Task InsertAllTheDataInSeveralBatches()
         {
             using var connection = GetConnection();
@@ -49,6 +49,7 @@ namespace FastInsert.Tests
         }
 
         [Fact]
+        
         public async Task GeneratedDataIsCorrectlyInserted()
         {
             using var connection = GetConnection();
