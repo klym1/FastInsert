@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/klym1/FastInsert.svg?branch=master)](https://travis-ci.org/klym1/FastInsert)
 
+[![Build status](https://ci.appveyor.com/api/projects/status/cdu5b6lis9ijs6gf?svg=true)](https://ci.appveyor.com/project/klym1/fastinsert)
+
 ## How does it work?
 
 It is a common fact that the fastest way to insert many rows in MySql is by using `LOAD DATA INFILE` query which loads file contents and inserts the rows into a table with lightning fast speed.
