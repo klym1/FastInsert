@@ -50,7 +50,7 @@ namespace FastInsert
                     var csvSettings = new CsvFileSettings
                     {
                         Delimiter = ";",
-                        LineEnding = "\r\n",
+                        LineEnding = Environment.NewLine,
                         Path = fileName,
                         FieldEscapedByChar = "\\\\",
                         FieldEnclosedByChar = "",
