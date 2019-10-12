@@ -25,3 +25,11 @@ build: off
 test_script:
   - cd src/FastInsert.Tests
   - dotnet test
+
+deploy:
+- provider: NuGet
+  on:
+    branch: master  
+  api_key:
+    secure: RoAi8N5E0Reb5EmfE6VkpGFvSkXyi9ZjGzlqJSVU+WVZCo0qdixvxKdA5SBD0VYB
+  skip_symbols: true
