@@ -24,7 +24,7 @@ artifacts:
   - path: .\.nupkgs\*.nupkg
 
 build_script:
-  - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" -c Release /p:PackageOutputPath=.\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
+  - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" -c Release /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
 test_script:
   - cd src/FastInsert.Tests
