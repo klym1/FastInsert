@@ -19,13 +19,14 @@ namespace FastInsert.Tests
         {
             var connBuilder = new MySqlConnectionStringBuilder
             {
+                Server = "localhost",
                 AllowLoadLocalInfile = true,
                 AllowUserVariables = true,
                 Database = "tests",
                 UserID = IsAppVeyor ? "root": "test",
                 Password = IsAppVeyor ? "Password12!" : "pass"
             };
-
+            
             var conn = connBuilder.ToString();
             return new MySqlConnection(conn);
         }
