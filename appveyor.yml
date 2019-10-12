@@ -10,7 +10,7 @@ environment:
   MYSQL_PWD: Password12!
   MYSQL_ENV_MYSQL_USER: root
   MYSQL_ENV_MYSQL_PASSWORD: Password12!
-  MYSQL_ENV_MYSQL_DATABASE: test
+  MYSQL_ENV_MYSQL_DATABASE: tests
 services:
   - mysql
 
@@ -19,8 +19,6 @@ init:
 
 before_test:
   - mysql -e "CREATE DATABASE tests;" --user=root
-  - mysql -e "CREATE USER 'test'@'localhost' IDENTIFIED BY 'pass';" --user=root
-  - mysql -e "GRANT ALL ON tests.* TO 'test'@'localhost';" --user=root
 
 build: off
 
