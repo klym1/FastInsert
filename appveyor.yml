@@ -20,7 +20,8 @@ init:
 before_test:
   - mysql -e "CREATE DATABASE tests;" --user=root
 
-build: on
+build_script:
+  - cmd: dotnet publish ./src/FastInsert.sln
 
 test_script:
   - cd src/FastInsert.Tests
