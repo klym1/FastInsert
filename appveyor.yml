@@ -20,7 +20,7 @@ init:
 before_test:
   - mysql -e "CREATE DATABASE tests;" --user=root
 
-build: off
+build: on
 
 test_script:
   - cd src/FastInsert.Tests
