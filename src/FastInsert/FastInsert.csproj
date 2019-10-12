@@ -6,6 +6,10 @@
     <LangVersion>8</LangVersion>
     <ApplicationIcon />
     <StartupObject />
+    <Authors>Mykola Klymyuk</Authors>
+    <PackageId>MySqlFastInsert</PackageId>
+    <Product>MySqlFastInsert</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
