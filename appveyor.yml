@@ -1,3 +1,5 @@
+version: '0.1.{build}'
+
 image: Visual Studio 2017
 
 install:
@@ -20,8 +22,28 @@ init:
 before_test:
   - mysql -e "CREATE DATABASE tests;" --user=root
 
-build: off
+artifacts:
+  - path: .\.nupkgs\*.nupkg
+
+configuration: Release
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
+build_script:
+  - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
 test_script:
   - cd src/FastInsert.Tests
   - dotnet test
+
+deploy:
+- provider: NuGet
+  api_key:
+    secure: RoAi8N5E0Reb5EmfE6VkpGFvSkXyi9ZjGzlqJSVU+WVZCo0qdixvxKdA5SBD0VYB

@@ -4,8 +4,11 @@
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>8</LangVersion>
-    <ApplicationIcon />
-    <StartupObject />
+    <Authors>Mykola Klymyuk</Authors>
+    <Description>A high performance extension for inserting data into MySql table</Description>
+    <PackageId>MySqlFastInsert</PackageId>
+    <Product>MySqlFastInsert</Product>
+    <Version>1.0.0-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>
