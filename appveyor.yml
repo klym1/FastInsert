@@ -21,10 +21,10 @@ before_test:
   - mysql -e "CREATE DATABASE tests;" --user=root
 
 artifacts:
-  - path: ./src/FastInsert/bin/Release/*.nupkg
+  - path: .\.nupkgs\*.nupkg
 
 build_script:
-  - cmd: dotnet publish -c Release ./src/FastInsert.sln
+  - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" -c Release /p:PackageOutputPath=.\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
 test_script:
   - cd src/FastInsert.Tests
@@ -35,4 +35,3 @@ deploy:
   api_key:
     secure: RoAi8N5E0Reb5EmfE6VkpGFvSkXyi9ZjGzlqJSVU+WVZCo0qdixvxKdA5SBD0VYB
   skip_symbols: true
-  artifact: ./src/FastInsert/bin/Release/MySqlFastInsert.1.0.0.nupkg
