@@ -29,7 +29,7 @@ configuration: Release
 
 dotnet_csproj:
   patch: true
-  file: '**\*.csproj'
+  file: '.\src\FastInsert\*.csproj'
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
@@ -37,7 +37,7 @@ dotnet_csproj:
   informational_version: '{version}'
 
 build_script:
-  - cmd: dotnet pack -p:PackageVersion={version} ".\src\FastInsert\FastInsert.csproj" /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
+  - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
 test_script:
   - cd src/FastInsert.Tests
