@@ -9,6 +9,8 @@
     <PackageId>MySqlFastInsert</PackageId>
     <Product>MySqlFastInsert</Product>
     <Version>1.0.0-alpha</Version>
+    <PackageProjectUrl>https://github.com/klym1/FastInsert</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
