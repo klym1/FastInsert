@@ -29,7 +29,7 @@ configuration: Release
 
 dotnet_csproj:
   patch: true
-  file: '.\src\FastInsert\FastInsert.csproj'
+  file: '**\*.csproj'
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
