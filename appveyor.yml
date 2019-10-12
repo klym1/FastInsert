@@ -21,14 +21,14 @@ before_test:
   - mysql -e "CREATE DATABASE tests;" --user=root
 
 artifacts:
-  - path: .\.nupkgs\*.nupkg
+  - path: ./src/FastInsert/bin/Release/*.nupkg
 
 build_script:
   - cmd: dotnet publish -c Release ./src/FastInsert.sln
 
 test_script:
   - cd src/FastInsert.Tests
-  - dotnet test
+  - dotnet test -c Release
 
 deploy:
 - provider: NuGet
