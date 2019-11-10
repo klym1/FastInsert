@@ -7,7 +7,7 @@ namespace FastInsert
     {
         public ITableNameResolver TableNameResolver { get; set; }
         public int BatchSize { get; set; }
-        public TextWriter Writer { get; set; }
+        public TextWriter? Writer { get; set; }
 
         public FastInsertConfig(Type elemType)
         {
