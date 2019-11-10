@@ -18,9 +18,9 @@ namespace FastInsert
             Action<FastInsertConfig>? conf = null)
         {
             EnsureMySqlConnection(connection);
-            
+
             var config = GetConfig<T>(conf);
-            
+
             if (!ConnectionStringValidator.ConnectionStringValid(connection.ConnectionString, out var error))
                 throw new ArgumentException(error);
 
@@ -100,12 +100,12 @@ namespace FastInsert
 
             var opt1 = conf.TypeConverterOptionsCache.GetOptions<DateTime>();
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
-            opt1.Formats = new[] { "O" };
+            opt1.Formats = new[] {"O"};
 
             conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());
 
             var map = conf.AutoMap<T>();
-            
+
             return map;
         }
     }
