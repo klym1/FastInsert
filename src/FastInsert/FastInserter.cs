@@ -15,17 +15,12 @@ namespace FastInsert
     {
         public static async Task FastInsertAsync<T>(this IDbConnection connection,
             IEnumerable<T> list,
-            Action<FastInsertConfig> conf = null)
+            Action<FastInsertConfig>? conf = null)
         {
-            var config = new FastInsertConfig(typeof(T));
-
-            conf?.Invoke(config);
-
-            var type = connection.GetType().ToString();
-
-            if (!type.Contains("MySqlConnection"))
-                throw new ArgumentException("This extension can only be used with MySqlConnection");
-
+            EnsureMySqlConnection(connection);
+            
+            var config = GetConfig<T>(conf);
+            
             if (!ConnectionStringValidator.ConnectionStringValid(connection.ConnectionString, out var error))
                 throw new ArgumentException(error);
 
@@ -56,9 +51,9 @@ namespace FastInsert
                         FieldEnclosedByChar = "",
                     };
 
-                    var query = BuildQuery(tableName, tableDef, csvSettings);
+                    var query = BuildLoadDataQuery.BuildQuery(tableName, tableDef, csvSettings);
 
-                    WriteToCsvFileAsync(classConfig, partition, csvSettings);
+                    CsvFileWriter.WriteToCsvFileAsync(classConfig, partition, csvSettings);
                     await connection.ExecuteAsync(query);
                 }
                 finally
@@ -74,6 +69,21 @@ namespace FastInsert
                 connection.Close();
         }
 
+        private static void EnsureMySqlConnection(IDbConnection connection)
+        {
+            var type = connection.GetType().ToString();
+
+            if (!type.Contains("MySqlConnection"))
+                throw new ArgumentException("This extension can only be used with MySqlConnection");
+        }
+
+        private static FastInsertConfig GetConfig<T>(Action<FastInsertConfig> conf)
+        {
+            var config = new FastInsertConfig(typeof(T));
+            conf?.Invoke(config);
+            return config;
+        }
+
         private static IEnumerable<CsvColumnDef> GetClassFields(ClassMap map)
         {
             return map.MemberMaps.Select(m => new CsvColumnDef
@@ -82,19 +92,6 @@ namespace FastInsert
                     MemberInfo = m.Data.Member
                 }
             );
-        }
-
-        private static string BuildQuery(string tableName, TableDef tableDef, CsvFileSettings settings)
-        {
-            var fieldsExpression = FieldsExpressionBuilder.ToExpression(tableDef);
-
-            return $@"LOAD DATA LOCAL INFILE '{settings.Path}' 
-                   INTO TABLE {tableName} 
-                    COLUMNS TERMINATED BY '{settings.Delimiter}' ENCLOSED BY '{settings.FieldEnclosedByChar}' ESCAPED BY '{settings.FieldEscapedByChar}'
-                    LINES TERMINATED BY '{settings.LineEnding}' STARTING BY ''
-                    IGNORE 1 LINES                    
-                    {fieldsExpression}
-                    ";
         }
 
         private static ClassMap<T> GetConfiguration<T>()
@@ -111,26 +108,5 @@ namespace FastInsert
             
             return map;
         }
-
-        private static void WriteToCsvFileAsync<T>(ClassMap classMap, IEnumerable<T> list, CsvFileSettings settings)
-        {
-            using var fileStream = new FileStream(settings.Path, FileMode.Create);
-            using var textWriter = new StreamWriter(fileStream);
-            using var writer = new CsvWriter(textWriter);
-            writer.Configuration.Delimiter = settings.Delimiter;
-            writer.Configuration.RegisterClassMap(classMap);
-
-            writer.WriteRecords(list);
-        }
-    }
-
-    public class CsvFileSettings
-    {
-        public string Path { get; set; }
-        public string LineEnding { get; set; }
-        public string Delimiter { get; set; }
-
-        public string FieldEnclosedByChar { get; set; }
-        public string FieldEscapedByChar { get; set; }
     }
 }

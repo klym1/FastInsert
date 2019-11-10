@@ -37,7 +37,7 @@ namespace FastInsert
 
             private IEnumerable<T> GetNextBatch(IEnumerator<T> enumerator)
             {
-                for (int i = 0; i < _partitionSize; ++i)
+                for (var i = 0; i < _partitionSize; ++i)
                 {
                     yield return enumerator.Current;
                     _hasMoreItems = enumerator.MoveNext();
