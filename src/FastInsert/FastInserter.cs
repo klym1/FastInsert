@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 
 namespace FastInsert
 {
@@ -102,10 +103,12 @@ namespace FastInsert
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
             opt1.Formats = new[] {"O"};
 
-            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());
+            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());;
 
+            var byteArrayConverterOptions = ByteArrayConverterOptions.Hexadecimal;
+            conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayConverterOptions));
+            
             var map = conf.AutoMap<T>();
-
             return map;
         }
     }

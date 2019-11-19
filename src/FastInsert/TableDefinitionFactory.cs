@@ -9,7 +9,8 @@ namespace FastInsert
     {
         private static Dictionary<Type, Func<string, string>> _fieldOverrides = new Dictionary<Type, Func<string, string>>
         {
-            [typeof(Guid)] = varName => $"UNHEX({varName})"
+            [typeof(Guid)] = varName => $"UNHEX({varName})",
+            [typeof(byte[])] = varName => $"UNHEX({varName})"
         };
 
         public static TableDef BuildTableDefinition(IEnumerable<CsvColumnDef> fields)

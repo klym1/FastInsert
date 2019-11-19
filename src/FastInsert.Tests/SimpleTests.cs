@@ -80,6 +80,38 @@ namespace FastInsert.Tests
             Assert.Equal(list[0].Text, actualData[0].Text);
         }
         
+        [Fact]
+        public async Task BinaryColumnTest()
+        {
+            using var connection = GetConnection();
+            var tableName = "test_binary_column";
+            var list = new[]
+            {
+                new TableWithBinaryColumn
+                {
+                    Bytes = new byte[48]
+                }
+            };
+
+            new Random().NextBytes(list[0].Bytes);
+            
+            await connection.ExecuteAsync($"drop table if exists {tableName}");
+            await connection.ExecuteAsync($@"
+                CREATE TABLE IF NOT EXISTS `{tableName}` (
+                  `bytes` binary(48) NOT NULL
+                  );  ");
+
+            _testOutputHelper.WriteLine("Table created");
+
+            await connection.FastInsertAsync(list, o => o
+                .ToTable(tableName)
+                .Writer(new ConsoleWriter(_testOutputHelper)));
+
+            var actualData = (await connection.QueryAsync<TableWithBinaryColumn>($"select * from {tableName}")).ToList();
+
+            Assert.Equal(list[0].Bytes, actualData[0].Bytes);
+        }
+        
         private static IEnumerable<Table> GenerateData()
         {
             return Enumerable.Range(1, 100)
@@ -105,6 +137,11 @@ namespace FastInsert.Tests
             public DateTime DateCol { get; set; }
             public int Int { get; set; }
             public string Text { get; set; }
+        }
+        
+        private class TableWithBinaryColumn
+        {
+            public byte[] Bytes { get; set; }
         }
     }
 
