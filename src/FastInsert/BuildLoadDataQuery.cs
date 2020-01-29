@@ -1,6 +1,6 @@
 ﻿using FastInsert;
 
-static internal class BuildLoadDataQuery
+internal static class BuildLoadDataQuery
 {
     public static string BuildQuery(string tableName, TableDef tableDef, CsvFileSettings settings)
     {

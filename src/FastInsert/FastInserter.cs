@@ -32,7 +32,6 @@ namespace FastInsert
 
             var tableName = config.TableNameResolver.GetTableName();
 
-            var tableColumns = DbHelpers.GetTableColumns(connection, tableName, connection.Database);
             var classConfig = GetConfiguration<T>();
             var classFields = GetClassFields(classConfig);
             var tableDef = TableDefinitionFactory.BuildTableDefinition(classFields);

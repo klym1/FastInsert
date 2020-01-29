@@ -4,7 +4,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FastInsert;
 
-static internal class CsvFileWriter
+internal static class CsvFileWriter
 {
     public static void WriteToCsvFileAsync<T>(ClassMap classMap, IEnumerable<T> list, CsvFileSettings settings)
     {
