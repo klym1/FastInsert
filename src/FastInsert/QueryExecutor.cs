@@ -5,21 +5,27 @@ namespace FastInsert
 {
     internal static class QueryExecutor
     {
-        public static int Execute(this IDbConnection connection, string query)
-        {
-            using var command = connection.CreateCommand();
-            command.CommandText = query;
-            
-            return command.ExecuteNonQuery();
-        }
-
         public static Task<int> ExecuteAsync(this IDbConnection connection, string query)
         {
             return Task.Run(() =>
             {
-                using var command = connection.CreateCommand();
-                command.CommandText = query;
-                return command.ExecuteNonQuery();
+                var wasClosed = connection.State == ConnectionState.Closed;
+
+                if (wasClosed)
+                    connection.Open();
+                
+                try
+                {
+
+                    using var command = connection.CreateCommand();
+                    command.CommandText = query;
+                    return command.ExecuteNonQuery();
+                }
+                finally
+                {
+                    if (wasClosed)
+                        connection.Close();
+                }
             });
         }
     }

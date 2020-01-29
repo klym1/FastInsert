@@ -13,7 +13,7 @@ namespace FastInsert
 
             foreach (var col in tableDef.Columns)
             {
-                if (col.RequiresTransformation)
+                if (col.TransformFunc != null)
                 {
                     var var = $"@var{transformColumnIndex++}";
 

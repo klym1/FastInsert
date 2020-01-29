@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Linq;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-namespace FastInsert
+namespace FastInsert.CsvHelper
 {
     public class GuidConverter : ITypeConverter
     {

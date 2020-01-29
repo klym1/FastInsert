@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FastInsert.CsvHelper;
 
 namespace FastInsert
 {
@@ -13,13 +14,14 @@ namespace FastInsert
             [typeof(byte[])] = varName => $"UNHEX({varName})"
         };
 
-        public static TableDef BuildTableDefinition(IEnumerable<CsvColumnDef> fields)
+        public static TableDef BuildTableDefinition<T>()
         {
+            var fields = TypeInfoProvider.GetClassFields<T>();
+            
             var columns = fields.Select(f => new ColumnDef
             {
                 Name = f.Name,
-                RequiresTransformation = _fieldOverrides.ContainsKey((f.MemberInfo as PropertyInfo).PropertyType),
-                TransformFunc = _fieldOverrides.TryGetValue((f.MemberInfo as PropertyInfo).PropertyType, out var func) ? func : (f => f)
+                TransformFunc = _fieldOverrides.TryGetValue(MemberInfoType.GetType(f.MemberInfo), out var func) ? func : null
             }).ToList();
 
             return new TableDef
