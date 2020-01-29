@@ -23,7 +23,6 @@ namespace FastInsert
             var tableName = config.TableNameResolver.GetTableName();
 
             var writer = CsvWriterConfigurator.GetWriter<T>();
-            
             var tableDef = TableDefinitionFactory.BuildTableDefinition<T>();
 
             foreach (var partition in EnumerableExtensions.GetPartitions(list, config.BatchSize))

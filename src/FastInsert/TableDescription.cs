@@ -12,7 +12,6 @@ namespace FastInsert
     public class ColumnDef
     {
         public string Name { get; set; }
-        public bool RequiresTransformation { get; set; }
         public Func<string, string> TransformFunc { get; set; }
     }
 
