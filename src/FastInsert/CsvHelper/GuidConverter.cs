@@ -9,8 +9,8 @@ namespace FastInsert.CsvHelper
     {
         public string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
         {
-            var guid = (Guid) value;
-            return guid.ToString("N");
+            var guid = (Guid?) value;
+            return guid?.ToString("N") ?? "\\N";
         }
       
         public object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)

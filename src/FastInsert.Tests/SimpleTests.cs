@@ -112,6 +112,38 @@ namespace FastInsert.Tests
             Assert.Equal(list[0].Bytes, actualData[0].Bytes);
         }
         
+        [Fact]
+        public async Task NullableGuidTest()
+        {
+            using var connection = GetConnection();
+            var tableName = "NullableGuidTest";
+            var list = new[]
+            {
+                new NullableGuid
+                {
+                    Guid = null
+                },
+                new NullableGuid
+                {
+                    Guid = Guid.Empty
+                }
+            };
+            
+            await connection.ExecuteAsync($"drop table if exists {tableName}");
+            await connection.ExecuteAsync($@"
+                CREATE TABLE IF NOT EXISTS `{tableName}` (
+                  `Guid` binary(48) NULL
+                  );  ");
+
+            await connection.FastInsertAsync(list, o => o
+                .ToTable(tableName)
+                .Writer(new ConsoleWriter(_testOutputHelper)));
+
+            var actualData = (await connection.QueryAsync<NullableGuid>($"select * from {tableName}")).ToList();
+
+            Assert.Equal(list[0].Guid, actualData[0].Guid);
+        }
+        
         private static IEnumerable<Table> GenerateData()
         {
             return Enumerable.Range(1, 100)
@@ -137,6 +169,11 @@ namespace FastInsert.Tests
             public DateTime DateCol { get; set; }
             public int Int { get; set; }
             public string Text { get; set; }
+        }
+        
+        private class NullableGuid
+        {
+            public Guid? Guid { get; set; }
         }
         
         private class TableWithBinaryColumn
