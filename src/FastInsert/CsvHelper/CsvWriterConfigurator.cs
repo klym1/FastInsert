@@ -8,12 +8,12 @@ namespace FastInsert.CsvHelper
 {
     public class CsvWriterConfigurator
     {
-        public static ICsvWriter GetWriter<T>()
+        public static ICsvWriter GetWriter(Type type)
         {
-            return new CsvFileWriter(GetConfiguration<T>());
+            return new CsvFileWriter(GetConfiguration(type));
         }
         
-        private static ClassMap<T> GetConfiguration<T>()
+        private static ClassMap GetConfiguration(Type type)
         {
             var conf = new CsvConfiguration(CultureInfo.CurrentCulture);
 
@@ -26,7 +26,7 @@ namespace FastInsert.CsvHelper
             const ByteArrayConverterOptions byteArrayConverterOptions = ByteArrayConverterOptions.Hexadecimal;
             conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayConverterOptions));
             
-            var map = conf.AutoMap<T>();
+            var map = conf.AutoMap(type);
             return map;
         }
     }

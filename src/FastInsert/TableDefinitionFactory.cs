@@ -14,9 +14,9 @@ namespace FastInsert
             [typeof(byte[])] = varName => $"UNHEX({varName})"
         };
 
-        public static TableDef BuildTableDefinition<T>()
+        public static TableDef BuildTableDefinition(Type type)
         {
-            var fields = TypeInfoProvider.GetClassFields<T>();
+            var fields = TypeInfoProvider.GetClassFields(type);
             
             var columns = fields.Select(f => new ColumnDef
             {
