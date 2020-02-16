@@ -144,6 +144,35 @@ namespace FastInsert.Tests
             Assert.Equal(list[0].Guid, actualData[0].Guid);
         }
         
+        [Fact]
+        public async Task WithoutGetterTest()
+        {
+            using var connection = GetConnection();
+            var tableName = "WithoutGetterTest";
+            var list = new[]
+            {
+                new WithoutGetter
+                {
+                    Val = "123"
+                },
+            };
+            
+            await connection.ExecuteAsync($"drop table if exists {tableName}");
+            await connection.ExecuteAsync($@"
+                CREATE TABLE IF NOT EXISTS `{tableName}` (
+                  `Val` text
+                  );  ");
+
+            await connection.FastInsertAsync(list, o => o
+                .ToTable(tableName)
+                .Writer(new ConsoleWriter(_testOutputHelper)));
+
+            var actualData = (await connection.QueryAsync<WithoutGetter>($"select * from {tableName}")).ToList();
+
+            Assert.Equal(list[0].Val, actualData[0].Val);
+            Assert.Equal(list[0].Descr, actualData[0].Descr);
+        }
+        
         private static IEnumerable<Table> GenerateData()
         {
             return Enumerable.Range(1, 100)
@@ -169,6 +198,12 @@ namespace FastInsert.Tests
             public DateTime DateCol { get; set; }
             public int Int { get; set; }
             public string Text { get; set; }
+        }
+        
+        private class WithoutGetter
+        {
+            public string Val { get; set; }
+            public string Descr => "Description: " + Val;
         }
         
         private class NullableGuid

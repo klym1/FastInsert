@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
@@ -26,8 +27,7 @@ namespace FastInsert.CsvHelper
             const ByteArrayConverterOptions byteArrayConverterOptions = ByteArrayConverterOptions.Hexadecimal;
             conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayConverterOptions));
             
-            var map = conf.AutoMap(type);
-            return map;
+            return ClassAutoMapper.AutoMap(type, conf);
         }
     }
 }
