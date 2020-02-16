@@ -173,6 +173,46 @@ namespace FastInsert.Tests
             Assert.Equal(list[0].Descr, actualData[0].Descr);
         }
         
+        [Fact]
+        public async Task EnumTest()
+        {
+            using var connection = GetConnection();
+            var tableName = "EnumTest";
+            var list = new[]
+            {
+                new WithEnum
+                {
+                    Val1 = TestEnum.Three,
+                    NullableVal = TestEnum.Two,
+                },
+                
+                new WithEnum
+                {
+                    Val1 = TestEnum.Two,
+                    NullableVal = TestEnum.One,
+                },
+            };
+            
+            await connection.ExecuteAsync($"drop table if exists {tableName}");
+            await connection.ExecuteAsync($@"
+                CREATE TABLE IF NOT EXISTS `{tableName}` (
+                  `Val1` int not null,
+                  `NullableVal` int
+                  );  ");
+
+            await connection.FastInsertAsync(list, o => o
+                .ToTable(tableName)
+                .Writer(new ConsoleWriter(_testOutputHelper)));
+
+            var actualData = (await connection.QueryAsync<WithEnum>($"select * from {tableName}")).ToList();
+
+            Assert.Equal(list[0].Val1, actualData[0].Val1);
+            Assert.Equal(list[0].NullableVal, actualData[0].NullableVal);
+            
+            Assert.Equal(list[1].Val1, actualData[1].Val1);
+            Assert.Equal(list[1].NullableVal, actualData[1].NullableVal);
+        }
+        
         private static IEnumerable<Table> GenerateData()
         {
             return Enumerable.Range(1, 100)
@@ -198,6 +238,17 @@ namespace FastInsert.Tests
             public DateTime DateCol { get; set; }
             public int Int { get; set; }
             public string Text { get; set; }
+        }
+        
+        private class WithEnum
+        {
+            public TestEnum Val1 { get; set; }
+            public TestEnum? NullableVal { get; set; }
+        }
+
+        public enum TestEnum
+        {
+            One, Two, Three
         }
         
         private class WithoutGetter

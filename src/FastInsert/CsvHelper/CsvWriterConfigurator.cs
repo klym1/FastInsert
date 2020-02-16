@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Reflection;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
@@ -22,8 +23,15 @@ namespace FastInsert.CsvHelper
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
             opt1.Formats = new[] {"O"};
 
-            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());;
+            type.GetProperties()
+                .Where(it => it.PropertyType.IsEnum || it.PropertyType.IsNullableEnum())
+                .Select(it => it.PropertyType)
+                .ToList()
+                .ForEach(prop => conf.TypeConverterOptionsCache.GetOptions(prop).Formats = new[] {"D"})
+                ;
 
+            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());;
+            
             const ByteArrayConverterOptions byteArrayConverterOptions = ByteArrayConverterOptions.Hexadecimal;
             conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayConverterOptions));
             
