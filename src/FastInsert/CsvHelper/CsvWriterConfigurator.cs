@@ -28,9 +28,9 @@ namespace FastInsert.CsvHelper
                 .ForEach(prop => conf.TypeConverterOptionsCache.GetOptions(prop).Formats = new[] {"D"})
                 ;
 
-            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());;
-
             var byteArrayOptions = GetOptions(binaryFormat);
+            
+            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter(byteArrayOptions));
             conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayOptions));
             
             return ClassAutoMapper.AutoMap(type, conf);
