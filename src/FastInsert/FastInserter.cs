@@ -41,14 +41,13 @@ namespace FastInsert
                 try
                 {
                     var csvSettings = new CsvFileSettings
-                    {
-                        Delimiter = ";;",
-                        LineEnding = Environment.NewLine,
-                        Path = fileName,
-                        FieldEscapedByChar = "\\\\",
-                        FieldEnclosedByChar = "", 
-                        
-                    };
+                    (
+                        delimiter : ";;",
+                        lineEnding : Environment.NewLine,
+                        path : fileName,
+                        fieldEscapedByChar : "\\\\",
+                        fieldEnclosedByChar : ""
+                    );
 
                     var query = BuildLoadDataQuery.BuildQuery(tableName, tableDef, csvSettings);
 
@@ -76,7 +75,7 @@ namespace FastInsert
                 throw new ArgumentException("This extension can only be used with MySqlConnection");
         }
 
-        private static FastInsertConfig GetConfig(Action<FastInsertConfig> conf, Type entityType)
+        private static FastInsertConfig GetConfig(Action<FastInsertConfig>? conf, Type entityType)
         {
             var config = new FastInsertConfig(entityType);
             conf?.Invoke(config);

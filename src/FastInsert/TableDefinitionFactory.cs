@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FastInsert.CsvHelper;
 
@@ -21,20 +22,13 @@ namespace FastInsert
 
         private static bool IsBinary(Type t) => t == typeof(byte[]) || t == typeof(Guid);
         
-        public static TableDef BuildTableDefinition(Type type, BinaryFormat format)
+        public static List<ColumnDef> BuildTableDefinition(Type type, BinaryFormat format)
         {
             var fields = TypeInfoProvider.GetClassFields(type);
             
-            var columns = fields.Select(f => new ColumnDef
-            {
-                Name = f.Name,
-                TransformFunc = GetTransformer(MemberInfoType.GetType(f.MemberInfo), format)
-            }).ToList();
-
-            return new TableDef
-            {
-                Columns = columns
-            };
+            return fields
+                .Select(f => new ColumnDef(f.Name, GetTransformer(MemberInfoType.GetType(f.MemberInfo), format)))
+                .ToList();
         }
     }
 }

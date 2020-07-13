@@ -4,20 +4,27 @@ using System.Reflection;
 
 namespace FastInsert
 {
-    public class TableDef
-    {
-        public List<ColumnDef> Columns { get; set; }
-    }
-
     public class ColumnDef
     {
-        public string Name { get; set; }
-        public Func<string, string>? TransformFunc { get; set; }
+        public string Name { get; }
+        public Func<string, string>? TransformFunc { get; }
+
+        public ColumnDef(string name, Func<string, string>? transformFunc)
+        {
+            Name = name;
+            TransformFunc = transformFunc;
+        }
     }
 
     public class CsvColumnDef
     {
-        public string Name { get; set; }
-        public MemberInfo MemberInfo { get; set; }
+        public string Name { get; }
+        public MemberInfo MemberInfo { get; }
+
+        public CsvColumnDef(string name, MemberInfo memberInfo)
+        {
+            Name = name;
+            MemberInfo = memberInfo;
+        }
     }
 }

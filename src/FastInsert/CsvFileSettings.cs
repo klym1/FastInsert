@@ -8,5 +8,14 @@
 
         public string FieldEnclosedByChar { get; set; }
         public string FieldEscapedByChar { get; set; }
+
+        public CsvFileSettings(string path, string lineEnding, string delimiter, string fieldEnclosedByChar, string fieldEscapedByChar)
+        {
+            Path = path;
+            LineEnding = lineEnding;
+            Delimiter = delimiter;
+            FieldEnclosedByChar = fieldEnclosedByChar;
+            FieldEscapedByChar = fieldEscapedByChar;
+        }
     }
 }

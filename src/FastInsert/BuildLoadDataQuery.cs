@@ -1,8 +1,10 @@
-﻿namespace FastInsert
+﻿using System.Collections.Generic;
+
+namespace FastInsert
 {
     internal static class BuildLoadDataQuery
     {
-        public static string BuildQuery(string tableName, TableDef tableDef, CsvFileSettings settings)
+        public static string BuildQuery(string tableName, List<ColumnDef> tableDef, CsvFileSettings settings)
         {
             var fieldsExpression = FieldsExpressionBuilder.ToExpression(tableDef);
 

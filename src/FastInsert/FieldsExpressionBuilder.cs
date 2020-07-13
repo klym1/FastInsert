@@ -5,13 +5,13 @@ namespace FastInsert
 {
     public class FieldsExpressionBuilder
     {
-        public static string ToExpression(TableDef tableDef)
+        public static string ToExpression(IEnumerable<ColumnDef> columns)
         {
             var fields = new List<string>();
             var transformations = new List<string>();
             var transformColumnIndex = 0;
 
-            foreach (var col in tableDef.Columns)
+            foreach (var col in columns)
             {
                 if (col.TransformFunc != null)
                 {

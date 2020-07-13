@@ -8,7 +8,7 @@ namespace FastInsert.CsvHelper
 {
     public static class ClassAutoMapper
     {
-        public static ClassMap AutoMap(Type type, CsvConfiguration conf = null)
+        public static ClassMap AutoMap(Type type, CsvConfiguration? conf = null)
         {
             var map = (conf ?? new CsvConfiguration(CultureInfo.CurrentCulture)).AutoMap(type);
             

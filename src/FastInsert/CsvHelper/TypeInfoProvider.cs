@@ -9,10 +9,10 @@ namespace FastInsert.CsvHelper
         public static IEnumerable<CsvColumnDef> GetClassFields(Type type)
         {
             return ClassAutoMapper.AutoMap(type).MemberMaps.Where(m => !m.Data.Ignore).Select(m => new CsvColumnDef
-                {
-                    Name = m.Data.Names[0],
-                    MemberInfo = m.Data.Member
-                }
+                (
+                    m.Data.Names[0],
+                    m.Data.Member
+                )
             );
         }
     }

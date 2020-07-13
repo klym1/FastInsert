@@ -14,6 +14,10 @@
     <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="13.0.0" />
   </ItemGroup>
