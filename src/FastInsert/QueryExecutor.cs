@@ -16,7 +16,6 @@ namespace FastInsert
                 
                 try
                 {
-
                     using var command = connection.CreateCommand();
                     command.CommandText = query;
                     return command.ExecuteNonQuery();

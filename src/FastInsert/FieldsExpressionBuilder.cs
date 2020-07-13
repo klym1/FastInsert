@@ -5,7 +5,7 @@ namespace FastInsert
 {
     public class FieldsExpressionBuilder
     {
-        public static string ToExpression(IEnumerable<ColumnDef> columns)
+        public static string ToExpression(IEnumerable<Column> columns)
         {
             var fields = new List<string>();
             var transformations = new List<string>();

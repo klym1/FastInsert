@@ -25,11 +25,11 @@ namespace FastInsert.CsvHelper
             return actualType == typeof(byte[]) || actualType == typeof(Guid);
         }
 
-        public static IEnumerable<ColumnDef> GetClassFields(Type type, BinaryFormat format) =>
+        public static IEnumerable<Column> GetClassFields(Type type, BinaryFormat format) =>
             ClassAutoMapper.AutoMap(type)
                 .MemberMaps
                 .Where(m => !m.Data.Ignore)
-                .Select(m => new ColumnDef
+                .Select(m => new Column
                     (
                         m.Data.Names[0],
                         GetTransformer(MemberInfoType.GetType(m.Data.Member), format)
