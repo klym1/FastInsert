@@ -1,5 +1,3 @@
-using System;
-
 namespace FastInsert
 {
     internal static class ConnectionStringValidator

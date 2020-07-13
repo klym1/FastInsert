@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http.Headers;
-using System.Reflection;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
@@ -10,12 +8,12 @@ namespace FastInsert.CsvHelper
 {
     public class CsvWriterConfigurator
     {
-        public static ICsvWriter GetWriter(Type type)
+        public static ICsvWriter GetWriter(Type type, BinaryFormat binaryFormat)
         {
-            return new CsvFileWriter(GetConfiguration(type));
+            return new CsvFileWriter(GetConfiguration(type, binaryFormat));
         }
         
-        private static ClassMap GetConfiguration(Type type)
+        private static ClassMap GetConfiguration(Type type, BinaryFormat binaryFormat)
         {
             var conf = new CsvConfiguration(CultureInfo.CurrentCulture);
 
@@ -31,11 +29,18 @@ namespace FastInsert.CsvHelper
                 ;
 
             conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter());;
-            
-            const ByteArrayConverterOptions byteArrayConverterOptions = ByteArrayConverterOptions.Hexadecimal;
-            conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayConverterOptions));
+
+            var byteArrayOptions = GetOptions(binaryFormat);
+            conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayOptions));
             
             return ClassAutoMapper.AutoMap(type, conf);
         }
+
+        private static ByteArrayConverterOptions GetOptions(BinaryFormat binaryFormat) =>
+            binaryFormat switch
+            {
+                BinaryFormat.Hex => ByteArrayConverterOptions.Hexadecimal,
+                _ => ByteArrayConverterOptions.Base64
+            };
     }
 }

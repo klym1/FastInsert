@@ -31,8 +31,8 @@ namespace FastInsert
 
             var tableName = config.TableNameResolver.GetTableName();
 
-            var writer = CsvWriterConfigurator.GetWriter(entityType);
-            var tableDef = TableDefinitionFactory.BuildTableDefinition(entityType);
+            var writer = CsvWriterConfigurator.GetWriter(entityType, config.BinaryFormat);
+            var tableDef = TableDefinitionFactory.BuildTableDefinition(entityType, config.BinaryFormat);
 
             foreach (var partition in EnumerableExtensions.GetPartitions(list, config.BatchSize))
             {
@@ -46,7 +46,8 @@ namespace FastInsert
                         LineEnding = Environment.NewLine,
                         Path = fileName,
                         FieldEscapedByChar = "\\\\",
-                        FieldEnclosedByChar = "",
+                        FieldEnclosedByChar = "", 
+                        
                     };
 
                     var query = BuildLoadDataQuery.BuildQuery(tableName, tableDef, csvSettings);
@@ -56,8 +57,11 @@ namespace FastInsert
                 }
                 finally
                 {
-                    config.Writer?.WriteLine(fileName + ":");
-                    config.Writer?.WriteLine(File.ReadAllText(fileName));
+                    if (config?.Writer != null)
+                    {
+                        await config.Writer.WriteLineAsync(fileName + ":");
+                        await config.Writer.WriteLineAsync(File.ReadAllText(fileName));
+                    }
 
                     File.Delete(fileName);
                 }

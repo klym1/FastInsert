@@ -12,7 +12,7 @@ namespace FastInsert
     public class ColumnDef
     {
         public string Name { get; set; }
-        public Func<string, string> TransformFunc { get; set; }
+        public Func<string, string>? TransformFunc { get; set; }
     }
 
     public class CsvColumnDef

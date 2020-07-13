@@ -7,6 +7,7 @@ namespace FastInsert
     {
         public ITableNameResolver TableNameResolver { get; set; }
         public int BatchSize { get; set; }
+        public BinaryFormat BinaryFormat { get; set; }
         public TextWriter? Writer { get; set; }
 
         public FastInsertConfig(Type elemType)
@@ -16,8 +17,20 @@ namespace FastInsert
         }
     }
 
+    public enum BinaryFormat
+    {
+        Hex,
+        Base64,
+    }
+    
     public static class FastInsertConfigExtensions
     {
+        public static FastInsertConfig BinaryFormat(this FastInsertConfig conf, BinaryFormat format)
+        {
+            conf.BinaryFormat = format;
+            return conf;
+        }
+        
         public static FastInsertConfig ToTable(this FastInsertConfig conf, string tableName)
         {
             conf.TableNameResolver = new ManualTableNameResolver(tableName);
