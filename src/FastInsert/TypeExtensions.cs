@@ -9,7 +9,7 @@ namespace FastInsert
             return IsNullable(it, out var underlying) && (underlying?.IsEnum ?? false);
         }
 
-        private static bool IsNullable(this Type t, out Type? underlying)
+        public static bool IsNullable(this Type t, out Type? underlying)
         {
             underlying = Nullable.GetUnderlyingType(t);
             return underlying != null;

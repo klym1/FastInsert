@@ -19,16 +19,21 @@ namespace FastInsert.CsvHelper
             };
         }
 
-        private static bool IsBinary(Type t) => t == typeof(byte[]) || t == typeof(Guid);
-        
-        public static IEnumerable<ColumnDef> GetClassFields(Type type, BinaryFormat format)
+        private static bool IsBinary(Type t)
         {
-            return ClassAutoMapper.AutoMap(type).MemberMaps.Where(m => !m.Data.Ignore).Select(m => new ColumnDef
-                (
-                    m.Data.Names[0],
-                    GetTransformer(MemberInfoType.GetType(m.Data.Member), format)
-                )
-            );
+            var actualType = t.IsNullable(out var underlying) ? underlying : t;
+            return actualType == typeof(byte[]) || actualType == typeof(Guid);
         }
+
+        public static IEnumerable<ColumnDef> GetClassFields(Type type, BinaryFormat format) =>
+            ClassAutoMapper.AutoMap(type)
+                .MemberMaps
+                .Where(m => !m.Data.Ignore)
+                .Select(m => new ColumnDef
+                    (
+                        m.Data.Names[0],
+                        GetTransformer(MemberInfoType.GetType(m.Data.Member), format)
+                    )
+                );
     }
 }

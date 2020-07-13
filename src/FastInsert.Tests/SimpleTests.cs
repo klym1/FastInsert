@@ -159,6 +159,10 @@ namespace FastInsert.Tests
                 new NullableGuid
                 {
                     Guid = Guid.Empty
+                },
+                new NullableGuid
+                {
+                    Guid = Guid.Parse("885DD3E8-A733-4597-AE84-652E85E4DECD")
                 }
             };
             
@@ -173,8 +177,10 @@ namespace FastInsert.Tests
                 .Writer(new ConsoleWriter(_testOutputHelper)));
 
             var actualData = (await connection.QueryAsync<NullableGuid>($"select * from {tableName}")).ToList();
-
+            
             Assert.Equal(list[0].Guid, actualData[0].Guid);
+            Assert.Equal(list[1].Guid, actualData[1].Guid);
+            Assert.Equal(list[2].Guid, actualData[2].Guid);
         }
         
         [Fact]
