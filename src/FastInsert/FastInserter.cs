@@ -32,7 +32,7 @@ namespace FastInsert
             var tableName = config.TableNameResolver.GetTableName();
 
             var writer = CsvWriterConfigurator.GetWriter(entityType, config.BinaryFormat);
-            var tableDef = TableDefinitionFactory.BuildTableDefinition(entityType, config.BinaryFormat);
+            var tableDef = TypeInfoProvider.GetClassFields(entityType, config.BinaryFormat).ToList();
 
             foreach (var partition in EnumerableExtensions.GetPartitions(list, config.BatchSize))
             {

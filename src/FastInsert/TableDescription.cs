@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace FastInsert
 {
@@ -13,18 +11,6 @@ namespace FastInsert
         {
             Name = name;
             TransformFunc = transformFunc;
-        }
-    }
-
-    public class CsvColumnDef
-    {
-        public string Name { get; }
-        public MemberInfo MemberInfo { get; }
-
-        public CsvColumnDef(string name, MemberInfo memberInfo)
-        {
-            Name = name;
-            MemberInfo = memberInfo;
         }
     }
 }
