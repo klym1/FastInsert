@@ -27,7 +27,7 @@ namespace FastInsert
             }
 
             var joinedFields = string.Join(", ", fields);
-            var joinedTransformations = (transformations.Any() ? "SET" : "" ) + string.Join(", ", transformations);
+            var joinedTransformations = (transformations.Any() ? "SET " : "" ) + string.Join(", ", transformations);
 
             return $"({joinedFields})\n{joinedTransformations}\n";
         }
