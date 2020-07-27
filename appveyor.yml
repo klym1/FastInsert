@@ -27,6 +27,7 @@ nuget:
   disable_publish_on_pr: true
 
 skip_branch_with_pr: true
+skip_tags: true
 
 configuration: Release
 
