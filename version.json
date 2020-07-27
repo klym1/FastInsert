@@ -1,0 +1,16 @@
+{
+  "version": "0.2",
+  "assemblyVersion": "0.2.0.0",
+  "publicReleaseRefSpec": [
+    "^refs/heads/master$"
+  ],
+  "nugetPackageVersion": {
+    "semVer": 2
+  },
+  "cloudBuild": {
+    "buildNumber": {
+      "enabled": true,
+      "setVersionVariables": true
+    }
+  }
+}
