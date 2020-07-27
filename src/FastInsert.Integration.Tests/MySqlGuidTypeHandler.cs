@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using Dapper;
 
-namespace FastInsert.Tests
+namespace FastInsert.Integration.Tests
 {
     //taken from here: https://github.com/StackExchange/Dapper/issues/447#issuecomment-277589028
     public class MySqlGuidTypeHandler : SqlMapper.TypeHandler<Guid>

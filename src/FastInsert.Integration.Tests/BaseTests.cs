@@ -3,7 +3,7 @@ using System.Data;
 using Dapper;
 using MySql.Data.MySqlClient;
 
-namespace FastInsert.Tests
+namespace FastInsert.Integration.Tests
 {
     public class BaseTests
     {
@@ -15,7 +15,7 @@ namespace FastInsert.Tests
             SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
         }
 
-        public IDbConnection GetConnection()
+        public static IDbConnection GetConnection()
         {
             var connBuilder = new MySqlConnectionStringBuilder
             {

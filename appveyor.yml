@@ -1,4 +1,4 @@
-version: '0.1.{build}'
+version: '0.2.0'
 
 image: Visual Studio 2017
 
@@ -28,6 +28,8 @@ artifacts:
 nuget:
   disable_publish_on_pr: true
 
+skip_branch_with_pr: true
+
 configuration: Release
 
 dotnet_csproj:
@@ -43,8 +45,7 @@ build_script:
   - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
 test_script:
-  - cd src/FastInsert.Tests
-  - dotnet test
+  - dotnet test src
 
 deploy:
 - provider: NuGet
