@@ -35,9 +35,6 @@ configuration: Release
 build_script:
   - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
-test_script:
-  - dotnet test src
-
 deploy:
 - provider: NuGet
   on:
