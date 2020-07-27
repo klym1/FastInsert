@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Xunit;
@@ -20,6 +18,10 @@ namespace FastInsert.Integration.Tests
         }
 
         [Fact]
+        [WithTable(@"             
+                  `int32` int NOT NULL
+                 , `mediumText` mediumText NOT NULL"
+        )]
         public async Task InsertAllTheDataInSeveralBatches()
         {
             using var connection = GetConnection();
@@ -31,14 +33,7 @@ namespace FastInsert.Integration.Tests
                         MediumText = "text" + it,
                     }).ToList();
 
-            var tableName = "Test123";
-
-            await connection.ExecuteAsync($"drop table if exists `{tableName}`");
-            await connection.ExecuteAsync($@"
-                CREATE TABLE IF NOT EXISTS `{tableName}` (                 
-                  `int32` int NOT NULL,
-                  `mediumText` mediumText NOT NULL
-                  );  ");
+            const string tableName = nameof(InsertAllTheDataInSeveralBatches);
 
             await connection.FastInsertAsync(list, o => o
                 .BatchSize(2)
@@ -52,39 +47,37 @@ namespace FastInsert.Integration.Tests
         }
 
         [Fact]
+        [WithTable(@"
+                  `guid`    binary(16)  NOT NULL
+                , `dateCol` datetime(3) NOT NULL
+                , `int`     int         NOT NULL
+                , `text`    text        NOT NULL"
+        )]
         public async Task GeneratedDataIsCorrectlyInserted()
         {
             using var connection = GetConnection();
             var list = GenerateData().ToList();
 
-            await connection.ExecuteAsync("drop table if exists test");
-            await connection.ExecuteAsync(@"
-                CREATE TABLE IF NOT EXISTS `test` (
-                  `guid` binary(16) NOT NULL,
-                  `dateCol` datetime(3) NOT NULL,
-                  `int` int NOT NULL,
-                  `text` text NOT NULL
-                  );  ");
-
-            _testOutputHelper.WriteLine("Table created");
-
+            const string table = nameof(GeneratedDataIsCorrectlyInserted); 
+            
             await connection.FastInsertAsync(list, o => o
-                .ToTable("test")
+                .ToTable(table)
                 .Writer(new ConsoleWriter(_testOutputHelper)));
 
-            var actualData = (await connection.QueryAsync<Table>("select * from test")).ToList();
+            var actualData = (await connection.QueryAsync<Table>($"select * from {table}")).ToList();
 
             Assert.Equal(list[0].DateCol, actualData[0].DateCol, TimeSpan.FromMilliseconds(1));
             Assert.Equal(list[0].Guid, actualData[0].Guid);
             Assert.Equal(list[0].Int, actualData[0].Int);
             Assert.Equal(list[0].Text, actualData[0].Text);
         }
-        
+
         [Fact]
+        [WithTable("`bytes` binary(48) NOT NULL")]
         public async Task BinaryColumnTest()
         {
             using var connection = GetConnection();
-            var tableName = "test_binary_column";
+            const string tableName = nameof(BinaryColumnTest);
             var list = new[]
             {
                 new TableWithBinaryColumn
@@ -95,14 +88,6 @@ namespace FastInsert.Integration.Tests
 
             new Random().NextBytes(list[0].Bytes);
             
-            await connection.ExecuteAsync($"drop table if exists {tableName}");
-            await connection.ExecuteAsync($@"
-                CREATE TABLE IF NOT EXISTS `{tableName}` (
-                  `bytes` binary(48) NOT NULL
-                  );  ");
-
-            _testOutputHelper.WriteLine("Table created");
-
             await connection.FastInsertAsync(list, o => o
                 .ToTable(tableName)
                 .Writer(new ConsoleWriter(_testOutputHelper)));
@@ -113,10 +98,11 @@ namespace FastInsert.Integration.Tests
         }
         
         [Fact]
+        [WithTable("`bytes` binary(48) NOT NULL")]
         public async Task BinaryColumnWithBase64Test()
         {
             using var connection = GetConnection();
-            var tableName = "test_binary_column";
+            const string tableName = nameof(BinaryColumnWithBase64Test);
             var list = new[]
             {
                 new TableWithBinaryColumn
@@ -127,14 +113,6 @@ namespace FastInsert.Integration.Tests
 
             new Random().NextBytes(list[0].Bytes);
             
-            await connection.ExecuteAsync($"drop table if exists {tableName}");
-            await connection.ExecuteAsync($@"
-                CREATE TABLE IF NOT EXISTS `{tableName}` (
-                  `bytes` binary(48) NOT NULL
-                  );  ");
-
-            _testOutputHelper.WriteLine("Table created");
-
             await connection.FastInsertAsync(list, o => o
                 .ToTable(tableName)
                 .BinaryFormat(BinaryFormat.Hex)
@@ -146,10 +124,11 @@ namespace FastInsert.Integration.Tests
         }
         
         [Fact]
+        [WithTable("`Guid` binary(48) NULL")]
         public async Task NullableGuidTest()
         {
             using var connection = GetConnection();
-            var tableName = "NullableGuidTest";
+            const string tableName = nameof(NullableGuidTest);
             var list = new[]
             {
                 new NullableGuid
@@ -166,12 +145,6 @@ namespace FastInsert.Integration.Tests
                 }
             };
             
-            await connection.ExecuteAsync($"drop table if exists {tableName}");
-            await connection.ExecuteAsync($@"
-                CREATE TABLE IF NOT EXISTS `{tableName}` (
-                  `Guid` binary(48) NULL
-                  );  ");
-
             await connection.FastInsertAsync(list, o => o
                 .ToTable(tableName)
                 .Writer(new ConsoleWriter(_testOutputHelper)));
@@ -184,10 +157,11 @@ namespace FastInsert.Integration.Tests
         }
         
         [Fact]
+        [WithTable("`Val` text")]
         public async Task WithoutGetterTest()
         {
             using var connection = GetConnection();
-            var tableName = "WithoutGetterTest";
+            const string tableName = nameof(WithoutGetterTest);
             var list = new[]
             {
                 new WithoutGetter
@@ -196,12 +170,6 @@ namespace FastInsert.Integration.Tests
                 },
             };
             
-            await connection.ExecuteAsync($"drop table if exists {tableName}");
-            await connection.ExecuteAsync($@"
-                CREATE TABLE IF NOT EXISTS `{tableName}` (
-                  `Val` text
-                  );  ");
-
             await connection.FastInsertAsync(list, o => o
                 .ToTable(tableName)
                 .Writer(new ConsoleWriter(_testOutputHelper)));
@@ -213,10 +181,11 @@ namespace FastInsert.Integration.Tests
         }
         
         [Fact]
+        [WithTable(@"`Val1` int not null, `NullableVal` int")]
         public async Task EnumTest()
         {
             using var connection = GetConnection();
-            var tableName = "EnumTest";
+            const string tableName = nameof(EnumTest);
             var list = new[]
             {
                 new WithEnum
@@ -232,13 +201,6 @@ namespace FastInsert.Integration.Tests
                 },
             };
             
-            await connection.ExecuteAsync($"drop table if exists {tableName}");
-            await connection.ExecuteAsync($@"
-                CREATE TABLE IF NOT EXISTS `{tableName}` (
-                  `Val1` int not null,
-                  `NullableVal` int
-                  );  ");
-
             await connection.FastInsertAsync(list, o => o
                 .ToTable(tableName)
                 .Writer(new ConsoleWriter(_testOutputHelper)));
@@ -285,7 +247,7 @@ namespace FastInsert.Integration.Tests
             public TestEnum? NullableVal { get; set; }
         }
 
-        public enum TestEnum
+        private enum TestEnum
         {
             One, Two, Three
         }
@@ -304,23 +266,6 @@ namespace FastInsert.Integration.Tests
         private class TableWithBinaryColumn
         {
             public byte[] Bytes { get; set; }
-        }
-    }
-
-    public class ConsoleWriter : TextWriter
-    {
-        public override Encoding Encoding{ get; }
-
-        private ITestOutputHelper _helper;
-
-        public ConsoleWriter(ITestOutputHelper helper)
-        {
-            _helper = helper;
-        }
-
-        public override void WriteLine(string value)
-        {
-            _helper.WriteLine(value);
         }
     }
 }

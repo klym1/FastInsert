@@ -15,7 +15,7 @@ namespace FastInsert.Integration.Tests
             SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
         }
 
-        public IDbConnection GetConnection()
+        public static IDbConnection GetConnection()
         {
             var connBuilder = new MySqlConnectionStringBuilder
             {
