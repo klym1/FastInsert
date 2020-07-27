@@ -2,7 +2,7 @@ language: csharp
 mono: none
 dotnet: 3.0
 script:
-- dotnet test src/FastInsert.Tests/FastInsert.Tests.csproj
+- dotnet test src
 services:
 - mysql
 before_install:
