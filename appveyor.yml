@@ -27,17 +27,19 @@ nuget:
   disable_publish_on_pr: true
 
 skip_branch_with_pr: true
-skip_tags: true
-test: off
 
 configuration: Release
 
 build_script:
   - cmd: dotnet pack ".\src\FastInsert\FastInsert.csproj" /p:PackageOutputPath=..\..\.nupkgs /p:NoPackageAnalysis=true /p:CI=true
 
+test_script:
+  - dotnet test src
+
 deploy:
 - provider: NuGet
   on:
     branch: master
+    APPVEYOR_REPO_TAG: true
   api_key:
     secure: RoAi8N5E0Reb5EmfE6VkpGFvSkXyi9ZjGzlqJSVU+WVZCo0qdixvxKdA5SBD0VYB
