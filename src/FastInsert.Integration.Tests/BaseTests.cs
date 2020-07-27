@@ -3,7 +3,7 @@ using System.Data;
 using Dapper;
 using MySql.Data.MySqlClient;
 
-namespace FastInsert.Tests
+namespace FastInsert.Integration.Tests
 {
     public class BaseTests
     {

@@ -8,7 +8,7 @@ using Dapper;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace FastInsert.Tests
+namespace FastInsert.Integration.Tests
 {
     public class SimpleTests : BaseTests
     {
