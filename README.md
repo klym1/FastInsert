@@ -24,10 +24,57 @@ var list = Enumerable.Range(1, 100000)
             Text = "text" + id
         });
             
-await connection.FastInsertAsync(list, tableName);
+await connection.FastInsertAsync(list, tableName: "table");
 
 ```
 
 The code above will insert 100000 rows into a table with a matter of seconds.
 
-Under the hood the library utilizes **CsvHelper** (https://github.com/JoshClose/CsvHelper) to generate a csv file.
+Under the hood the library utilizes **CsvHelper** (https://github.com/JoshClose/CsvHelper) to generate a csv file. The file is automatically cleaned up after the request is completed.
+
+## Prerequisites
+
+The library is built on top of 'LOAD DATA INFILE' command, but the possibility to load data from *.csv files is disabled by default. To make it work set 'AllowLoadLocalInfile' parameter to 'true' in the mysql connection string:
+
+```sql
+;AllowLoadLocalInfile=true;
+```
+
+Also, if you intend to insert some binary data, 'AllowUserVariables' must be enabled too:
+
+```sql
+;AllowLoadLocalInfile=true;AllowUserVariables=true;
+```
+
+## Examples
+
+The libary supports all built-in types (like `bool`, `int`, `string` etc) and some commonly used ones, like `Guid`, `byte[]`. More generic support (like Dapper has) might be added in the future.
+
+
+## Configuration
+
+Fluent configuration is available with the following options:
+
+
+```csharp
+
+connection.FastInsertAsync(list, 
+     conf => conf
+         //specify the target table name
+         .ToTable(tableName)              
+
+         //Set the maximum number of rows per single csv file (default: 100000)
+         .BatchSize(100000)               
+    
+         //specify how binary data is saved to *.csv file, 
+         //BinaryFormat.Hex (default) - e.g. 0xABC0123
+         //BinaryFormat.Base64 - e.g. cnR5ZA== (more efficient than Hex)
+         .BinaryFormat(BinaryFormat.Hex)  
+    
+         //When set the csv contents will be written to `writer`                  
+         .Writer(writer)    
+
+);
+```
+
+
