@@ -50,6 +50,77 @@ Also, if you intend to insert some binary data, 'AllowUserVariables' must be ena
 
 The libary supports all built-in types (like `bool`, `int`, `string` etc) and some commonly used ones, like `Guid`, `byte[]`. More generic support (like Dapper has) might be added in the future.
 
+Consider the following c# types:
+
+```csharp
+
+public enum TestEnum
+{
+    One, Two, Three
+}
+        
+public class TestTable
+{
+    public int Id { get; set; }
+    public Guid GuidId { get; set; }
+    public TestEnum EnumVal { get; set; }
+    public byte[] Bytes { get; set; }
+    public string Text { get; set; }
+}
+
+```
+
+And the table definition:
+
+```sql
+
+CREATE TABLE `test_table` (
+    `id` int(11),
+    `guidId` binary(16) NOT NULL,
+    `enumVal` int(11) DEFAULT NULL,
+    `bytes` binary(1024) DEFAULT NULL,
+    `text` mediumtext
+)
+
+```
+
+
+Let's insert some data:
+
+```csharp
+
+var list = new[]
+{
+    new TestTable
+    {
+        Bytes = new byte[] {0xAA, 0x12},
+        EnumVal = TestEnum.Three,
+        Id = 234,
+        GuidId = Guid.Parse("1E0F8F96-1A19-46A8-B5A9-7C88A9845FBA"),
+        Text = "Lorem ipsum dolor sit amet",
+    }
+};
+
+var connection = new MySqlConnection(conn);
+            
+await connection.FastInsertAsync(list, tableName: "test_table");
+
+```
+
+The resulting csv file will be as the following:
+
+```csv
+Id;;GuidId;;EnumVal;;Bytes;;Text;;NullableGuid
+234;;1e0f8f961a1946a8b5a97c88a9845fba;;2;;AA12;;Lorem ipsum dolor sit amet;;
+```
+
+and the resulting data in the table (dump):
+
+```
+INSERT INTO `test_table` VALUES
+(234,0x1E0F8F961A1946A8B5A97C88A9845FBA,2,0xAA12,'Lorem ipsum dolor sit amet');
+```
+
 
 ## Configuration
 
