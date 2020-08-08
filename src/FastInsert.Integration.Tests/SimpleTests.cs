@@ -73,7 +73,7 @@ namespace FastInsert.Integration.Tests
         }
 
         [Fact]
-        [WithTable("`bytes` binary(48) NOT NULL")]
+        [WithTable("`bytes` binary(48)")]
         public async Task BinaryColumnTest()
         {
             using var connection = GetConnection();
@@ -83,6 +83,10 @@ namespace FastInsert.Integration.Tests
                 new TableWithBinaryColumn
                 {
                     Bytes = new byte[48]
+                },
+                new TableWithBinaryColumn
+                {
+                    Bytes = null
                 }
             };
 
@@ -95,6 +99,7 @@ namespace FastInsert.Integration.Tests
             var actualData = (await connection.QueryAsync<TableWithBinaryColumn>($"select * from {tableName}")).ToList();
 
             Assert.Equal(list[0].Bytes, actualData[0].Bytes);
+            Assert.Equal(list[1].Bytes, actualData[1].Bytes);
         }
         
         [Fact]

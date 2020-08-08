@@ -31,11 +31,11 @@ namespace FastInsert.CsvHelper
                 .ToList()
                 .ForEach(prop =>
                 {
-                    if (prop.IsNullable(out _))
+                    if (prop.IsNullable(out _) || prop.IsClass)
                     {
-                        conf.TypeConverterCache.AddConverter(prop, new NullableConverter(prop, conf.TypeConverterCache));
+                        conf.TypeConverterCache.AddConverter(prop, new NullConverter(prop, conf.TypeConverterCache));
                     }
-
+                    
                     if (prop.IsEnum || prop.IsNullableEnum())
                     {
                         var opts = conf.TypeConverterOptionsCache.GetOptions(prop);
