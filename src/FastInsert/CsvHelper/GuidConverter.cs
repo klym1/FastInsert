@@ -1,36 +1,30 @@
-﻿using System;
+﻿
+using System;
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
+using static FastInsert.BinaryFormat;
 
 namespace FastInsert.CsvHelper
 {
-    public class GuidConverter : ITypeConverter
+    public class GuidConverter : DefaultTypeConverter
     {
-        private readonly ByteArrayConverterOptions _byteArrayOptions;
+        private readonly BinaryFormat _binaryFormat;
 
-        public GuidConverter(ByteArrayConverterOptions byteArrayOptions) 
-            => _byteArrayOptions = byteArrayOptions;
+        public GuidConverter(BinaryFormat format) 
+            => _binaryFormat = format;
 
-        public string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+        public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
         {
-            var guid = (Guid?) value;
+            var guid = (Guid) value;
+            var str = guid.ToString("N");
 
-            if (guid == null)
-                return "\\N";
-            
-            var str = guid.Value.ToString("N");
-
-            if (_byteArrayOptions == ByteArrayConverterOptions.Base64)
+            return _binaryFormat switch
             {
-                var bytes = Converter.StringToByteArray(str);
-                return Convert.ToBase64String(bytes);
-            }
-            
-            return str;
+                Base64 => Convert.ToBase64String(Converter.StringToByteArray(str)),
+                Hex => str,
+                _ => throw new ArgumentOutOfRangeException(nameof(_binaryFormat))
+            };
         }
-        
-        public object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData) 
-            => throw new NotImplementedException();
     }
 }

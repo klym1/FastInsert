@@ -21,18 +21,28 @@ namespace FastInsert.CsvHelper
             opt1.DateTimeStyle = DateTimeStyles.AssumeUniversal;
             opt1.Formats = new[] {"O"};
 
-            type.GetProperties()
-                .Where(it => it.PropertyType.IsEnum || it.PropertyType.IsNullableEnum())
-                .Select(it => it.PropertyType)
-                .ToList()
-                .ForEach(prop => conf.TypeConverterOptionsCache.GetOptions(prop).Formats = new[] {"D"})
-                ;
-
             var byteArrayOptions = GetOptions(binaryFormat);
             
-            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter(byteArrayOptions));
+            conf.TypeConverterCache.AddConverter(typeof(Guid), new GuidConverter(binaryFormat));
             conf.TypeConverterCache.AddConverter(typeof(byte[]), new ByteArrayConverter(byteArrayOptions));
-            
+
+            type.GetProperties()
+                .Select(it => it.PropertyType)
+                .ToList()
+                .ForEach(prop =>
+                {
+                    if (prop.IsNullable(out _))
+                    {
+                        conf.TypeConverterCache.AddConverter(prop, new NullableConverter(prop, conf.TypeConverterCache));
+                    }
+
+                    if (prop.IsEnum || prop.IsNullableEnum())
+                    {
+                        var opts = conf.TypeConverterOptionsCache.GetOptions(prop);
+                        opts.Formats = new[] {"D"};
+                    }
+                });
+                
             return ClassAutoMapper.AutoMap(type, conf);
         }
 

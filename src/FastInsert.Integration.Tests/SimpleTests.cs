@@ -197,7 +197,7 @@ namespace FastInsert.Integration.Tests
                 new WithEnum
                 {
                     Val1 = TestEnum.Two,
-                    NullableVal = TestEnum.One,
+                    NullableVal = null,
                 },
             };
             
