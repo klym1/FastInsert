@@ -10,8 +10,8 @@
     <Version>1.0.0-alpha</Version>
     <PackageProjectUrl>https://github.com/klym1/FastInsert</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Nullable>enable</Nullable>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Nullable>annotations</Nullable>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.5" />
+    <Folder Include="CsvHelper\src" />
   </ItemGroup>
 
 </Project>
