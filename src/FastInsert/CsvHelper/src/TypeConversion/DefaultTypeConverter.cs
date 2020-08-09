@@ -35,22 +35,5 @@ namespace CsvHelper.TypeConversion
 
             return value.ToString();
         }
-
-        /// <summary>
-        /// Converts the string to an object.
-        /// </summary>
-        /// <param name="text">The string to convert to an object.</param>
-        /// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-        /// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-        /// <returns>The object created from the string.</returns>
-        public virtual object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-        {
-            var message =
-                $"The conversion cannot be performed.\r\n" +
-                $"    Text: '{text}'\r\n" +
-                $"    MemberType: {memberMapData.Member?.MemberType().FullName}\r\n" +
-                $"    TypeConverter: '{memberMapData.TypeConverter?.GetType().FullName}'";
-            throw new TypeConverterException(this, memberMapData, text, (ReadingContext)row.Context, message);
-        }
     }
 }

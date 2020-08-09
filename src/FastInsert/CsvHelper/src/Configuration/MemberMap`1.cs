@@ -175,19 +175,7 @@ namespace CsvHelper.Configuration
 			return this;
 		}
 
-		/// <summary>
-		/// Specifies an expression to be used to convert data in the
-		/// row to the member.
-		/// </summary>
-		/// <param name="convertExpression">The convert expression.</param>
-		public virtual MemberMap<TClass, TMember> ConvertUsing(Func<IReaderRow, TMember> convertExpression)
-		{
-			Data.ReadingConvertExpression = (Expression<Func<IReaderRow, TMember>>)(x => convertExpression(x));
-
-			return this;
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Specifies an expression to be used to convert the object
 		/// to a field.
 		/// </summary>

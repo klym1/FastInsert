@@ -55,31 +55,6 @@ namespace CsvHelper.TypeConversion
 		}
 
 		/// <summary>
-		/// Converts the string to an object.
-		/// </summary>
-		/// <param name="text">The string to convert to an object.</param>
-		/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-		/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-		/// <returns>The object created from the string.</returns>
-		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-		{
-			if (string.IsNullOrEmpty(text))
-			{
-				return null;
-			}
-
-			foreach (var nullValue in memberMapData.TypeConverterOptions.NullValues)
-			{
-				if (text == nullValue)
-				{
-					return null;
-				}
-			}
-
-			return UnderlyingTypeConverter.ConvertFromString(text, row, memberMapData);
-		}
-
-		/// <summary>
 		/// Converts the object to a string.
 		/// </summary>
 		/// <param name="value">The object to convert to a string.</param>

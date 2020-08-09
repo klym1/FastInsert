@@ -36,50 +36,5 @@ namespace CsvHelper.TypeConversion
 
 			return null;
 		}
-
-		/// <summary>
-		/// Converts the string to an object.
-		/// </summary>
-		/// <param name="text">The string to convert to an object.</param>
-		/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-		/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-		/// <returns>The object created from the string.</returns>
-		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-		{
-			var list = new List<string>();
-
-			if (memberMapData.IsNameSet || row.Configuration.HasHeaderRecord && !memberMapData.IsIndexSet)
-			{
-				// Use the name.
-				var nameIndex = 0;
-				while (true)
-				{
-					if (!row.TryGetField(memberMapData.Names.FirstOrDefault(), nameIndex, out string field))
-					{
-						break;
-					}
-
-					list.Add(field);
-					nameIndex++;
-				}
-			}
-			else
-			{
-				// Use the index.
-				var indexEnd = memberMapData.IndexEnd < memberMapData.Index
-					? row.Context.Record.Length - 1
-					: memberMapData.IndexEnd;
-
-				for (var i = memberMapData.Index; i <= indexEnd; i++)
-				{
-					if (row.TryGetField(i, out string field))
-					{
-						list.Add(field);
-					}
-				}
-			}
-
-			return list;
-		}
-	}
+    }
 }

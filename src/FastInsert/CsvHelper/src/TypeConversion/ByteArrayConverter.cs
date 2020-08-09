@@ -50,25 +50,6 @@ namespace CsvHelper.TypeConversion
 			return base.ConvertToString(value, row, memberMapData);
 		}
 
-		/// <summary>
-		/// Converts the string to an object.
-		/// </summary>
-		/// <param name="text">The string to convert to an object.</param>
-		/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-		/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-		/// <returns>The object created from the string.</returns>
-		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-		{
-			if (text != null)
-			{
-				return (options & ByteArrayConverterOptions.Base64) == ByteArrayConverterOptions.Base64
-					? Convert.FromBase64String(text)
-					: HexStringToByteArray(text);
-			}
-
-			return base.ConvertFromString(text, row, memberMapData);
-		}
-
 		private string ByteArrayToHexString(byte[] byteArray)
 		{
 			var hexString = new StringBuilder();

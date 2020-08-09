@@ -14,58 +14,5 @@ namespace CsvHelper.TypeConversion
 	/// </summary>
 	public class ArrayConverter : IEnumerableConverter
 	{
-		/// <summary>
-		/// Converts the string to an object.
-		/// </summary>
-		/// <param name="text">The string to convert to an object.</param>
-		/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-		/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-		/// <returns>The object created from the string.</returns>
-		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-		{
-			Array array;
-			var type = memberMapData.Member.MemberType().GetElementType();
-
-			if (memberMapData.IsNameSet || row.Configuration.HasHeaderRecord && !memberMapData.IsIndexSet)
-			{
-				// Use the name.
-				var list = new List<object>();
-				var nameIndex = 0;
-				while (true)
-				{
-					if (!row.TryGetField(type, memberMapData.Names.FirstOrDefault(), nameIndex, out var field))
-					{
-						break;
-					}
-
-					list.Add(field);
-					nameIndex++;
-				}
-
-				array = (Array)ReflectionHelper.CreateInstance(memberMapData.Member.MemberType(), list.Count);
-				for (var i = 0; i < list.Count; i++)
-				{
-					array.SetValue(list[i], i);
-				}
-			}
-			else
-			{
-				// Use the index.
-				var indexEnd = memberMapData.IndexEnd < memberMapData.Index
-					? row.Context.Record.Length - 1
-					: memberMapData.IndexEnd;
-
-				var arraySize = indexEnd - memberMapData.Index + 1;
-				array = (Array)ReflectionHelper.CreateInstance(memberMapData.Member.MemberType(), arraySize);
-				var arrayIndex = 0;
-				for (var i = memberMapData.Index; i <= indexEnd; i++)
-				{
-					array.SetValue(row.GetField(type, i), arrayIndex);
-					arrayIndex++;
-				}
-			}
-
-			return array;
-		}
-	}
+    }
 }

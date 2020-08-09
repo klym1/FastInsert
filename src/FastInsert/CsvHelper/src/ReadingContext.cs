@@ -169,23 +169,7 @@ namespace CsvHelper
 		/// </summary>
 		public IParserConfiguration ParserConfiguration => configuration;
 
-		/// <summary>
-		/// Gets the <see cref="CsvReader"/> configuration.
-		/// </summary>
-		public IReaderConfiguration ReaderConfiguration => configuration;
-
-		/// <summary>
-		/// Gets all the characters of the record including
-		/// quotes, delimiters, and line endings.
-		/// </summary>
-		public string RawRecord => RawRecordBuilder.ToString();
-
-		/// <summary>
-		/// Gets the field.
-		/// </summary>
-		public string Field => FieldBuilder.ToString();
-
-		/// <summary>
+        /// <summary>
 		/// Initializes a new instance.
 		/// </summary>
 		/// <param name="reader">The reader.</param>

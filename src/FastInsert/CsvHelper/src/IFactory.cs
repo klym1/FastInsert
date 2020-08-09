@@ -14,50 +14,7 @@ namespace CsvHelper
 	/// </summary>
 	public interface IFactory
 	{
-		/// <summary>
-		/// Creates an <see cref="IParser"/>.
-		/// </summary>
-		/// <param name="reader">The text reader to use for the csv parser.</param>
-		/// <param name="configuration">The configuration to use for the csv parser.</param>
-		/// <returns>The created parser.</returns>
-		IParser CreateParser(TextReader reader, Configuration.CsvConfiguration configuration);
-
-		/// <summary>
-		/// Creates an <see cref="IParser" />.
-		/// </summary>
-		/// <param name="reader">The text reader to use for the csv parser.</param>
-		/// <param name="cultureInfo">The culture information.</param>
-		/// <returns>
-		/// The created parser.
-		/// </returns>
-		IParser CreateParser(TextReader reader, CultureInfo cultureInfo);
-
-		/// <summary>
-		/// Creates an <see cref="IReader"/>.
-		/// </summary>
-		/// <param name="reader">The text reader to use for the csv reader.</param>
-		/// <param name="configuration">The configuration to use for the reader.</param>
-		/// <returns>The created reader.</returns>
-		IReader CreateReader(TextReader reader, Configuration.CsvConfiguration configuration);
-
-		/// <summary>
-		/// Creates an <see cref="IReader" />.
-		/// </summary>
-		/// <param name="reader">The text reader to use for the csv reader.</param>
-		/// <param name="cultureInfo">The culture information.</param>
-		/// <returns>
-		/// The created reader.
-		/// </returns>
-		IReader CreateReader(TextReader reader, CultureInfo cultureInfo);
-
-		/// <summary>
-		/// Creates an <see cref="IReader"/>.
-		/// </summary>
-		/// <param name="parser">The parser used to create the reader.</param>
-		/// <returns>The created reader.</returns>
-		IReader CreateReader(IParser parser);
-
-		/// <summary>
+        /// <summary>
 		/// Creates an <see cref="IWriter"/>.
 		/// </summary>
 		/// <param name="writer">The text writer to use for the csv writer.</param>

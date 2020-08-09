@@ -202,13 +202,6 @@ namespace CsvHelper.Configuration
 	public interface IHasConvertUsing<TClass, TMember> : IBuildableClass<TClass>
 	{
 		/// <summary>
-		/// Specifies an expression to be used to convert data in the
-		/// row to the member.
-		/// </summary>
-		/// <param name="convertExpression">The convert expression.</param>
-		IHasMap<TClass> ConvertUsing( Func<IReaderRow, TMember> convertExpression );
-
-		/// <summary>
 		/// Specifies an expression to be used to convert the object
 		/// to a field.
 		/// </summary>
@@ -352,11 +345,7 @@ namespace CsvHelper.Configuration
 		}
 #pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
 
-		public IHasMap<TClass> ConvertUsing( Func<IReaderRow, TMember> convertExpression )
-		{
-			memberMap.ConvertUsing( convertExpression );
-			return this;
-		}
+		
 
 		public IHasMap<TClass> ConvertUsing( Func<TClass, string> convertExpression )
 		{

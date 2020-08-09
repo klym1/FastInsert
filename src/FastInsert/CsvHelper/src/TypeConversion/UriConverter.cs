@@ -16,25 +16,6 @@ namespace CsvHelper.TypeConversion
 	/// </summary>
 	public class UriConverter : DefaultTypeConverter
     {
-		/// <summary>
-		/// Converts the <see cref="string"/>  to a <see cref="Uri"/>.
-		/// </summary>
-		/// <param name="text">The string to convert to an object.</param>
-		/// <param name="row">The <see cref="IReaderRow" /> for the current record.</param>
-		/// <param name="memberMapData">The <see cref="MemberMapData" /> for the member being created.</param>
-		/// <returns>
-		/// The <see cref="Uri"/> created from the string.
-		/// </returns>
-		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-		{
-			var uriKind = memberMapData.TypeConverterOptions.UriKind ?? default;
 
-			if (Uri.TryCreate(text, uriKind, out var uri))
-			{
-				return uri;
-			}
-
-			return base.ConvertFromString(text, row, memberMapData);
-		}
 	}
 }

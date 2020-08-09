@@ -16,7 +16,7 @@ namespace CsvHelper
 	/// <summary>
 	/// Parses a CSV file.
 	/// </summary>
-	public partial class CsvParser : IParser
+	public partial class CsvParser
 	{
 		private ReadingContext context;
 		private IFieldReader fieldReader;
@@ -37,87 +37,7 @@ namespace CsvHelper
 		/// Gets the <see cref="FieldReader"/>.
 		/// </summary>
 		public virtual IFieldReader FieldReader => fieldReader;
-
-		/// <summary>
-		/// Creates a new parser using the given <see cref="TextReader" />.
-		/// </summary>
-		/// <param name="reader">The <see cref="TextReader" /> with the CSV file data.</param>
-		/// <param name="culture">The culture.</param>
-		public CsvParser(TextReader reader, CultureInfo culture) : this(new CsvFieldReader(reader, new Configuration.CsvConfiguration(culture), false)) { }
-
-		/// <summary>
-		/// Creates a new parser using the given <see cref="TextReader" />.
-		/// </summary>
-		/// <param name="reader">The <see cref="TextReader" /> with the CSV file data.</param>
-		/// <param name="culture">The culture.</param>
-		/// <param name="leaveOpen">true to leave the reader open after the CsvReader object is disposed, otherwise false.</param>
-		public CsvParser(TextReader reader, CultureInfo culture, bool leaveOpen) : this(new CsvFieldReader(reader, new Configuration.CsvConfiguration(culture), leaveOpen)) { }
-
-		/// <summary>
-		/// Creates a new parser using the given <see cref="TextReader"/> and <see cref="Configuration"/>.
-		/// </summary>
-		/// <param name="reader">The <see cref="TextReader"/> with the CSV file data.</param>
-		/// <param name="configuration">The configuration.</param>
-		public CsvParser(TextReader reader, Configuration.CsvConfiguration configuration) : this(new CsvFieldReader(reader, configuration, false)) { }
-
-		/// <summary>
-		/// Creates a new parser using the given <see cref="TextReader"/> and <see cref="Configuration"/>.
-		/// </summary>
-		/// <param name="reader">The <see cref="TextReader"/> with the CSV file data.</param>
-		/// <param name="configuration">The configuration.</param>
-		/// <param name="leaveOpen">true to leave the reader open after the CsvReader object is disposed, otherwise false.</param>
-		public CsvParser(TextReader reader, Configuration.CsvConfiguration configuration, bool leaveOpen) : this(new CsvFieldReader(reader, configuration, leaveOpen)) { }
-
-		/// <summary>
-		/// Creates a new parser using the given <see cref="FieldReader"/>.
-		/// </summary>
-		/// <param name="fieldReader">The field reader.</param>
-		public CsvParser(IFieldReader fieldReader)
-		{
-			this.fieldReader = fieldReader ?? throw new ArgumentNullException(nameof(fieldReader));
-			context = fieldReader.Context as ReadingContext ?? throw new InvalidOperationException($"For {nameof(FieldReader)} to be used in {nameof(CsvParser)}, {nameof(FieldReader.Context)} must also implement {nameof(ReadingContext)}.");
-		}
-			
-		/// <summary>
-		/// Reads a record from the CSV file.
-		/// </summary>
-		/// <returns>A <see cref="T:String[]" /> of fields for the record read.</returns>
-		public virtual string[] Read()
-		{
-			try
-			{
-				context.ClearCache(Caches.RawRecord);
-
-				var row = ReadLine();
-
-				return row;
-			}
-			catch (Exception ex)
-			{
-				throw ex as CsvHelperException ?? new ParserException(context, "An unexpected error occurred.", ex);
-			}
-		}
-			
-		/// <summary>
-		/// Reads a record from the CSV file asynchronously.
-		/// </summary>
-		/// <returns>A <see cref="T:String[]" /> of fields for the record read.</returns>
-		public virtual async Task<string[]> ReadAsync()
-		{
-			try
-			{
-				context.ClearCache(Caches.RawRecord);
-
-				var row = await ReadLineAsync().ConfigureAwait(false);
-
-				return row;
-			}
-			catch (Exception ex)
-			{
-				throw ex as CsvHelperException ?? new ParserException(context, "An unexpected error occurred.", ex);
-			}
-		}
-			
+        
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>

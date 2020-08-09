@@ -11,22 +11,15 @@ namespace CsvHelper.Expressions
 	/// </summary>
 	public class RecordManager
 	{
-		private readonly CsvReader reader;
-		private readonly RecordCreatorFactory recordCreatorFactory;
-		private readonly RecordHydrator recordHydrator;
 		private readonly RecordWriterFactory recordWriterFactory;
 
 		/// <summary>
 		/// Initializes a new instance using the given reader.
 		/// </summary>
 		/// <param name="reader"></param>
-		public RecordManager(CsvReader reader)
+		public RecordManager()
 		{
-			this.reader = reader;
-			var resolver = ObjectResolver.Current;
-			recordCreatorFactory = resolver.Resolve<RecordCreatorFactory>(reader);
-			recordHydrator = resolver.Resolve<RecordHydrator>(reader);
-		}
+        }
 
 		/// <summary>
 		/// Initializes a new instance using the given writer.
@@ -35,36 +28,6 @@ namespace CsvHelper.Expressions
 		public RecordManager(CsvWriter writer)
 		{
 			recordWriterFactory = ObjectResolver.Current.Resolve<RecordWriterFactory>(writer);
-		}
-
-		/// <summary>
-		/// Creates a record of the given type using the current reader row.
-		/// </summary>
-		/// <typeparam name="T">The type of record to create.</typeparam>
-		public T Create<T>()
-		{
-			var recordCreator = recordCreatorFactory.MakeRecordCreator(typeof(T));
-			return recordCreator.Create<T>();
-		}
-
-		/// <summary>
-		/// Creates a record of the given type using the current reader row.
-		/// </summary>
-		/// <param name="recordType">The type of record to create.</param>
-		public object Create(Type recordType)
-		{
-			var recordCreator = recordCreatorFactory.MakeRecordCreator(recordType);
-			return recordCreator.Create(recordType);
-		}
-
-		/// <summary>
-		/// Hydrates the given record using the current reader row.
-		/// </summary>
-		/// <typeparam name="T">The type of the record.</typeparam>
-		/// <param name="record">The record to hydrate.</param>
-		public void Hydrate<T>(T record)
-		{
-			recordHydrator.Hydrate(record);
 		}
 
 		/// <summary>
