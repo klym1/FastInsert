@@ -15,7 +15,7 @@ namespace CsvHelper.Configuration
 	/// <summary>
 	/// Configuration used for reading and writing CSV data.
 	/// </summary>
-	public class CsvConfiguration : IReaderConfiguration, IWriterConfiguration
+	public class CsvConfiguration : IWriterConfiguration
 	{
 		private string delimiter = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
 		private char escape = '"';
@@ -43,54 +43,8 @@ namespace CsvHelper.Configuration
 		/// </summary>
 		public virtual bool HasHeaderRecord { get; set; } = true;
 
-		/// <summary>
-		/// Gets or sets the function that is called when a header validation check is ran. The default function
-		/// will throw a <see cref="ValidationException"/> if there is no header for a given member mapping.
-		/// You can supply your own function to do other things like logging the issue instead of throwing an exception.
-		/// Arguments: isValid, headerNames, headerNameIndex, context
-		/// </summary>
-		public virtual Action<bool, string[], int, ReadingContext> HeaderValidated { get; set; } = ConfigurationFunctions.HeaderValidated;
 
-		/// <summary>
-		/// Gets or sets the function that is called when a missing field is found. The default function will
-		/// throw a <see cref="MissingFieldException"/>. You can supply your own function to do other things
-		/// like logging the issue instead of throwing an exception.
-		/// Arguments: headerNames, index, context
-		/// </summary>
-		public virtual Action<string[], int, ReadingContext> MissingFieldFound { get; set; } = ConfigurationFunctions.MissingFieldFound;
-
-		/// <summary>
-		/// Gets or sets the function that is called when bad field data is found. A field
-		/// has bad data if it contains a quote and the field is not quoted (escaped).
-		/// You can supply your own function to do other things like logging the issue
-		/// instead of throwing an exception.
-		/// Arguments: context
-		/// </summary>
-		public virtual Action<ReadingContext> BadDataFound { get; set; } = ConfigurationFunctions.BadDataFound;
-
-		/// <summary>
-		/// Gets or sets the function that is called when a reading exception occurs.
-		/// The default function will re-throw the given exception. If you want to ignore
-		/// reading exceptions, you can supply your own function to do other things like
-		/// logging the issue.
-		/// Arguments: exception
-		/// </summary>
-		public virtual Func<CsvHelperException, bool> ReadingExceptionOccurred { get; set; } = ConfigurationFunctions.ReadingExceptionOccurred;
-
-		/// <summary>
-		/// Gets or sets the callback that will be called to
-		/// determine whether to skip the given record or not.
-		/// </summary>
-		public virtual Func<string[], bool> ShouldSkipRecord { get; set; } = ConfigurationFunctions.ShouldSkipRecord;
-
-		/// <summary>
-		/// Gets or sets a value indicating if a line break found in a quote field should
-		/// be considered bad data. True to consider a line break bad data, otherwise false.
-		/// Defaults to false.
-		/// </summary>
-		public virtual bool LineBreakInQuotedFieldIsBadData { get; set; }
-
-		/// <summary>
+        /// <summary>
 		/// Gets or sets a value indicating if fields should be sanitized
 		/// to prevent malicious injection. This covers MS Excel, 
 		/// Google Sheets and Open Office Calc.
@@ -107,25 +61,7 @@ namespace CsvHelper.Configuration
 		/// </summary>
 		public virtual char InjectionEscapeCharacter { get; set; } = '\t';
 
-		/// <summary>
-		/// Gets or sets a value indicating whether changes in the column
-		/// count should be detected. If true, a <see cref="BadDataException"/>
-		/// will be thrown if a different column count is detected.
-		/// </summary>
-		/// <value>
-		/// <c>true</c> if [detect column count changes]; otherwise, <c>false</c>.
-		/// </value>
-		public virtual bool DetectColumnCountChanges { get; set; }
-
-		/// <summary>
-		/// Prepares the header field for matching against a member name.
-		/// The header field and the member name are both ran through this function.
-		/// You should do things like trimming, removing whitespace, removing underscores,
-		/// and making casing changes to ignore case.
-		/// </summary>
-		public virtual Func<string, int, string> PrepareHeaderForMatch { get; set; } = ConfigurationFunctions.PrepareHeaderForMatch;
-
-		/// <summary>
+        /// <summary>
 		/// Determines if constructor parameters should be used to create
 		/// the class instead of the default constructor and members.
 		/// </summary>
@@ -335,14 +271,7 @@ namespace CsvHelper.Configuration
 		/// </summary>
 		public virtual MemberTypes MemberTypes { get; set; } = MemberTypes.Properties;
 
-		/// <summary>
-		/// Gets or sets a value indicating if blank lines
-		/// should be ignored when reading.
-		/// True to ignore, otherwise false. Default is true.
-		/// </summary>
-		public virtual bool IgnoreBlankLines { get; set; } = true;
-
-		/// <summary>
+        /// <summary>
 		/// Gets or sets a callback that will return the prefix for a reference header.
 		/// Arguments: memberType, memberName
 		/// </summary>

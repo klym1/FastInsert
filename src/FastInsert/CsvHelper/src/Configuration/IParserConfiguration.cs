@@ -33,15 +33,6 @@ namespace CsvHelper.Configuration
 		Encoding Encoding { get; set; }
 
 		/// <summary>
-		/// Gets or sets the function that is called when bad field data is found. A field
-		/// has bad data if it contains a quote and the field is not quoted (escaped).
-		/// You can supply your own function to do other things like logging the issue
-		/// instead of throwing an exception.
-		/// Arguments: context
-		/// </summary>
-		Action<ReadingContext> BadDataFound { get; set; }
-
-		/// <summary>
 		/// Gets or sets a value indicating if a line break found in a quote field should
 		/// be considered bad data. True to consider a line break bad data, otherwise false.
 		/// Defaults to false.

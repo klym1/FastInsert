@@ -12,72 +12,7 @@ namespace CsvHelper.Configuration
 	{
 		private static readonly char[] quoteChars = new char[] { '\r', '\n' };
 
-		/// <summary>
-		/// Throws a <see cref="ValidationException"/> if <paramref name="isValid"/> is <c>false</c>.
-		/// </summary>
-		public static void HeaderValidated(bool isValid, string[] headerNames, int headerNameIndex, ReadingContext context)
-		{
-			if (isValid)
-			{
-				return;
-			}
-
-			var messagePostfix =
-				$"If you are expecting some headers to be missing and want to ignore this validation, " +
-				$"set the configuration {nameof(HeaderValidated)} to null. You can also change the " +
-				$"functionality to do something else, like logging the issue.";
-
-			var indexText = headerNameIndex > 0 ? $" at header name index {headerNameIndex}" : string.Empty;
-
-			if (headerNames.Length == 1)
-			{
-				throw new HeaderValidationException(context, headerNames, headerNameIndex, $"Header with name '{headerNames[0]}'{indexText} was not found. {messagePostfix}");
-			}
-
-			throw new HeaderValidationException(context, headerNames, headerNameIndex, $"Header containing names '{string.Join("' or '", headerNames)}'{indexText} was not found. {messagePostfix}");
-		}
-
-		/// <summary>
-		/// Throws a <c>MissingFieldException</c>.
-		/// </summary>
-		public static void MissingFieldFound(string[] headerNames, int index, ReadingContext context)
-		{
-			var messagePostfix = $"You can ignore missing fields by setting {nameof(MissingFieldFound)} to null.";
-
-			// Get by index.
-
-			if (headerNames == null || headerNames.Length == 0)
-			{
-				throw new MissingFieldException(context, $"Field at index '{index}' does not exist. {messagePostfix}");
-			}
-
-			// Get by name.
-
-			var indexText = index > 0 ? $" at field index '{index}'" : string.Empty;
-
-			if (headerNames.Length == 1)
-			{
-				throw new MissingFieldException(context, $"Field with name '{headerNames[0]}'{indexText} does not exist. {messagePostfix}");
-			}
-
-			throw new MissingFieldException(context, $"Field containing names '{string.Join("' or '", headerNames)}'{indexText} does not exist. {messagePostfix}");
-		}
-
-		/// <summary>
-		/// Throws a <see cref="BadDataException"/>.
-		/// </summary>
-		public static void BadDataFound(ReadingContext context)
-		{
-			throw new BadDataException(context, $"You can ignore bad data by setting {nameof(BadDataFound)} to null.");
-		}
-
-		/// <summary>
-		/// Throws the given <paramref name="exception"/>.
-		/// </summary>
-		public static bool ReadingExceptionOccurred(CsvHelperException exception)
-		{
-			return true;
-		}
+		
 
 		/// <summary>
 		/// Returns true if the field contains a <see cref="IWriterConfiguration.QuoteString"/>,
